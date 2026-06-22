@@ -17,16 +17,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const userId = (session.user as any)?.id;
-    const file = await prisma.projectFile.create({
+    const file = await prisma.file.create({
       data: {
-        fileName,
-        fileType: fileType ?? null,
-        fileSize: fileSize ?? null,
-        cloudStoragePath,
-        isPublic: isPublic ?? false,
+        name: fileName,
+        url: cloudStoragePath,
+        type: fileType ?? null,
+        size: fileSize ?? null,
         projectId,
-        uploadedById: userId,
       },
     });
 
