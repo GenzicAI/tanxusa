@@ -25,7 +25,7 @@ export async function GET() {
       });
     } else {
       projects = await prisma.project.findMany({
-        where: { clientId: userId },
+        where: { userId },
         include: {
           milestones: { orderBy: { createdAt: 'asc' } },
           _count: { select: { files: true, messages: true } },
