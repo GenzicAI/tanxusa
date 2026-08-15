@@ -102,10 +102,23 @@ export const galleryProjects: GalleryProject[] = [
     ],
   },
   {
-    slug: 'genzic-concierge',
-    title: 'Genzic Concierge',
+    slug: 'genzic-concierge-max',
+    title: 'Genzic Concierge — Max',
     category: 'Voice & Concierge',
-    tagline: 'Website / App Build Onboarding with Brittany',
+    tagline: 'AI Integration Onboarding',
+    url: 'https://genzic-concierge.vercel.app/assistant?agent=max',
+    features: [
+      'Orb-activated voice intake',
+      'Guided AI integration audit flow',
+      'Listen → Speak → Send',
+      'Instant session start',
+    ],
+  },
+  {
+    slug: 'genzic-concierge-brittany',
+    title: 'Genzic Concierge — Brittany',
+    category: 'Voice & Concierge',
+    tagline: 'Website / App Build Onboarding',
     url: 'https://genzic-concierge.vercel.app/assistant?agent=brittany',
     features: [
       'Orb-activated voice intake',
