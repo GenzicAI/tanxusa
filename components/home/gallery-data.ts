@@ -76,6 +76,19 @@ export const galleryProjects: GalleryProject[] = [
     ],
   },
   {
+    slug: 'intel-forge-login',
+    title: 'IntelForge Client Portal',
+    category: 'AI Agents & Platforms',
+    tagline: 'Multi-Tenant Login & Onboarding',
+    url: 'https://intel-forge-genzic-ai.vercel.app/login',
+    features: [
+      'Email + password sign-in',
+      'Magic link sign-in',
+      'Create account flow',
+      'Multi-tenant dashboard access',
+    ],
+  },
+  {
     slug: 'genzic-executor',
     title: 'Genzic Executor',
     category: 'Internal Systems',
