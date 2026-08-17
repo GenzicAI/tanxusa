@@ -41,7 +41,7 @@ export function LoginForm() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6">
-            <img src="/tanxusa-logo.svg" alt="TanXUSA logo" className="h-16 w-auto object-contain" />
+            <img src="/tanxusa-logo.svg" alt="TanXUSA logo" className="h-48 w-auto object-contain" />
           </Link>
           <h1 className="font-display text-3xl font-bold tracking-tight text-gray-900">Welcome back</h1>
           <p className="text-gray-500 mt-2">Sign in to your client portal</p>
