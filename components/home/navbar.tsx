@@ -17,7 +17,7 @@ export function Navbar() {
           <img
             src="/tanxusa-logo.svg"
             alt="TanXUSA logo"
-            className="absolute left-0 top-1/2 -translate-y-1/2 w-[168px] h-[168px] max-w-none object-contain"
+            className="absolute left-0 top-0 w-[168px] h-[168px] max-w-none object-contain"
           />
         </Link>
 
@@ -28,18 +28,18 @@ export function Navbar() {
           <a href="https://genzic.ai" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-600 hover:text-emerald-600 transition-colors">Genzic.AI</a>
         </div>
 
-        <div className="hidden md:flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href={session ? '/dashboard' : '/login'}
-            className="px-5 py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-sm font-semibold hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-md shadow-emerald-500/20"
+            className="px-3 py-2 sm:px-5 sm:py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs sm:text-sm font-semibold hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-md shadow-emerald-500/20"
           >
             {session ? 'Dashboard' : 'Client Login'}
           </Link>
-        </div>
 
-        <button className="md:hidden p-2" onClick={() => setIsOpen(!isOpen)} aria-label="Toggle menu">
-          {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
+          <button className="md:hidden p-2" onClick={() => setIsOpen(!isOpen)} aria-label="Toggle menu">
+            {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
       </div>
 
       <AnimatePresence>
@@ -54,13 +54,7 @@ export function Navbar() {
               <a href="#services" onClick={() => setIsOpen(false)} className="text-sm text-gray-600">Services</a>
               <a href="#deliveries" onClick={() => setIsOpen(false)} className="text-sm text-gray-600">Recent Work</a>
               <a href="#why" onClick={() => setIsOpen(false)} className="text-sm text-gray-600">Why TanXUSA</a>
-              <Link
-                href={session ? '/dashboard' : '/login'}
-                className="px-5 py-2.5 rounded-lg bg-emerald-500 text-white text-sm font-semibold text-center"
-                onClick={() => setIsOpen(false)}
-              >
-                {session ? 'Dashboard' : 'Client Login'}
-              </Link>
+              <a href="https://genzic.ai" target="_blank" rel="noopener noreferrer" onClick={() => setIsOpen(false)} className="text-sm text-gray-600">Genzic.AI</a>
             </div>
           </motion.div>
         )}
