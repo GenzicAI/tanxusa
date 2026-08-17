@@ -64,7 +64,7 @@ export const galleryProjects: GalleryProject[] = [
   },
   {
     slug: 'resource-group-leads',
-    title: 'Resource Group Lead Engine',
+    title: 'The Resource Group',
     category: 'AI Agents & Platforms',
     tagline: 'B2B Lead Generation Platform',
     url: 'https://resource-group-leads.vercel.app/',
