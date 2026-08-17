@@ -13,7 +13,7 @@ export function FooterSection() {
           {/* Brand */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <img src="/logo.jpg" alt="TanXUSA logo" className="w-9 h-9 rounded-lg object-cover" />
+              <img src="/tanxusa-logo.svg" alt="TanXUSA logo" className="w-12 h-12 object-contain" />
               <img src="/wordmark.jpg" alt="TanXUSA" className="h-7 object-contain brightness-0 invert" />
             </div>
             <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
