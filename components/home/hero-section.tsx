@@ -7,7 +7,7 @@ import { ArrowRight, Zap } from 'lucide-react';
 
 export function HeroSection() {
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-44">
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-24">
       {/* Background image with parallax */}
       <div className="absolute inset-0 z-0">
         <Image
