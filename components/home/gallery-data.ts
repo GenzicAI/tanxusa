@@ -63,6 +63,19 @@ export const galleryProjects: GalleryProject[] = [
     ],
   },
   {
+    slug: 'resource-group-leads',
+    title: 'Resource Group Lead Engine',
+    category: 'AI Agents & Platforms',
+    tagline: 'B2B Lead Generation Platform',
+    url: 'https://resource-group-leads.vercel.app/',
+    features: [
+      'Business-line selector across 5 verticals',
+      'Two-stage AI search: plain-English query to visible plan',
+      'Transparent 100-pt lead scoring',
+      'HIPAA-aware compliance gating built-in',
+    ],
+  },
+  {
     slug: 'intel-forge',
     title: 'IntelForge',
     category: 'AI Agents & Platforms',
