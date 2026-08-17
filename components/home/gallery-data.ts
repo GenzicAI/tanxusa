@@ -140,6 +140,19 @@ export const galleryProjects: GalleryProject[] = [
       'Instant session start',
     ],
   },
+  {
+    slug: 'voice-translator',
+    title: 'Genzic Voice Translator',
+    category: 'Voice & Concierge',
+    tagline: 'EN ↔ VI Real-Time Voice Translation',
+    url: 'https://voice-translator-bay.vercel.app/',
+    features: [
+      'Install-free, browser-only, works on any phone',
+      'Live English ↔ Vietnamese speech translation',
+      'App-controlled cloud voice for consistent audio',
+      'Guided in-app tutorial, zero setup',
+    ],
+  },
 ];
 
 export function screenshotUrl(url: string) {
