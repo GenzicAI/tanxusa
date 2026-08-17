@@ -17,7 +17,7 @@ export function Navbar() {
           <img
             src="/tanxusa-logo.svg"
             alt="TanXUSA logo"
-            className="absolute left-0 top-0 h-32 w-auto max-w-none object-contain"
+            className="absolute left-0 top-[-25.6px] h-32 w-auto max-w-none object-contain"
           />
         </Link>
 
