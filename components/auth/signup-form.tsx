@@ -53,8 +53,7 @@ export function SignupForm() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6">
-            <img src="/logo.jpg" alt="TanXUSA logo" className="w-10 h-10 rounded-xl object-cover" />
-            <img src="/wordmark.jpg" alt="TanXUSA" className="h-8 object-contain" />
+            <img src="/tanxusa-logo.svg" alt="TanXUSA logo" className="h-16 w-auto object-contain" />
           </Link>
           <h1 className="font-display text-3xl font-bold tracking-tight text-gray-900">Request Access</h1>
           <p className="text-gray-500 mt-2">Create your client account</p>

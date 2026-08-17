@@ -13,8 +13,7 @@ export function FooterSection() {
           {/* Brand */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <img src="/tanxusa-logo.svg" alt="TanXUSA logo" className="w-12 h-12 object-contain" />
-              <img src="/wordmark.jpg" alt="TanXUSA" className="h-7 object-contain brightness-0 invert" />
+              <img src="/tanxusa-logo.svg" alt="TanXUSA logo" className="h-12 w-auto object-contain brightness-0 invert" />
             </div>
             <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
               The execution and delivery arm of Genzic.AI. We turn strategy into reality with AI agents and expert delivery teams.

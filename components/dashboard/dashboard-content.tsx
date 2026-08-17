@@ -73,8 +73,7 @@ export function DashboardContent() {
       <nav className="bg-white border-b border-gray-100 sticky top-0 z-40">
         <div className="max-w-[1200px] mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <img src="/logo.jpg" alt="TanXUSA logo" className="w-9 h-9 rounded-lg object-cover" />
-            <img src="/wordmark.jpg" alt="TanXUSA" className="h-7 object-contain" />
+            <img src="/tanxusa-logo.svg" alt="TanXUSA logo" className="h-12 w-auto object-contain" />
           </Link>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600 hidden sm:block">Welcome, {session?.user?.name ?? 'Client'}</span>
