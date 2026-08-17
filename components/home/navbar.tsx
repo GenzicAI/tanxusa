@@ -12,12 +12,12 @@ export function Navbar() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-100">
-      <div className="max-w-[1200px] mx-auto px-6 h-14 flex items-center justify-between">
-        <Link href="/" className="relative z-10 w-14 h-14 shrink-0">
+      <div className="max-w-[1200px] mx-auto px-6 h-20 flex items-center justify-between">
+        <Link href="/" className="shrink-0">
           <img
             src="/tanxusa-logo.svg"
             alt="TanXUSA logo"
-            className="absolute left-0 top-0 w-[168px] h-[168px] max-w-none object-contain"
+            className="h-16 w-auto object-contain"
           />
         </Link>
 
