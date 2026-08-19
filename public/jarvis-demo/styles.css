@@ -334,7 +334,12 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
 .quick-item:hover { background: var(--panel2); color: var(--ink); }
 .icon-btn.is-off { color: var(--ink3); opacity: 0.6; }
 
-.scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 12px 0; }
+/* Empty until the first reply lands, so it claims no height of its own while
+   the orb owns the column; it only becomes the flexible row (and the thing
+   that scrolls) once there is a transcript to review. */
+.scroll { flex: 0 1 auto; min-height: 0; overflow-y: auto; padding: 12px 0; }
+.chat:not(.is-conversing) .scroll { padding: 0; }
+.chat.is-conversing .scroll { flex: 1 1 auto; }
 
 /* Hero: the orb sits in the one flexible row so it absorbs whatever height the
    hint and suggestions don't need — no JS measuring, and it re-fits on resize
@@ -353,12 +358,29 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
   flex-direction: column;
   align-items: center;
   gap: 14px;
-  height: 100%;
+  /* Owns the whole column while the session is still empty. Once a
+     conversation starts it locks to the compact band below instead. */
+  flex: 1 1 auto;
+  min-height: 0;
   /* Deliberately NOT `overflow: hidden`: with the canvas out of flow, the only
      way this still overflows is a window genuinely too short for the hint and
      ten suggestions, and scrolling to reach them beats clipping the last row
      off the bottom. */
 }
+
+/* Conversation mode: the orb shrinks to a fixed top band and pins there, and
+   the transcript underneath gets the rest of the column plus its own
+   scrollbar. A share rather than a pixel height so it holds its proportion on
+   any window size, with a floor so it can't collapse on a short one. */
+.chat.is-conversing .hero {
+  flex: 0 0 42%;
+  min-height: 130px;
+}
+.chat.is-conversing .hero-orb { min-height: 0; }
+/* The starter hint and the ask tiles are opening-screen furniture: once there
+   are real replies to read, that space belongs to the transcript. */
+.chat.is-conversing .hero-hint,
+.chat.is-conversing .suggestions { display: none; }
 .hero-orb {
   flex: 1 1 auto;
   /* Floor rather than 0: on a very short window the orb shrinks but never

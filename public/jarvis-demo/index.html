@@ -155,12 +155,16 @@
           </div>
         </header>
 
+        <!-- The hero sits OUTSIDE .scroll on purpose: the orb is the mic
+             control, not decoration, so it must stay put and stay visible for
+             the whole session. Inside the scroller it would scroll away the
+             moment the transcript grew past one screen. -->
+        <div class="hero" id="hero">
+          <div class="hero-orb"><canvas id="heroOrb"></canvas></div>
+          <p class="hero-hint" id="heroHint">Ask about anything in your folder.</p>
+          <div class="suggestions" id="suggestions"></div>
+        </div>
         <div class="scroll" id="scroll">
-          <div class="hero" id="hero">
-            <div class="hero-orb"><canvas id="heroOrb"></canvas></div>
-            <p class="hero-hint" id="heroHint">Ask about anything in your folder.</p>
-            <div class="suggestions" id="suggestions"></div>
-          </div>
           <div class="turns" id="turns" hidden></div>
         </div>
 

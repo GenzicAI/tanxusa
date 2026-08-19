@@ -63,6 +63,7 @@
   let speaking = false;
   let listening = false;
   let muted = false;
+  let statsRefreshTimer = null;
 
   // ---------------------------------------------------------------- visuals
 
@@ -282,7 +283,11 @@
   function renderTurns() {
     const box = $("turns");
     box.hidden = turns.length === 0;
-    $("hero").hidden = turns.length > 0;
+    // The hero is never hidden — the orb is the mic control and has to stay
+    // reachable all session. It just drops to its pinned compact band (see
+    // .chat.is-conversing in styles.css) so the transcript gets room to
+    // scroll underneath it.
+    document.querySelector(".chat").classList.toggle("is-conversing", turns.length > 0);
     box.innerHTML = "";
     turns.forEach((turn) => {
       const wrap = el("div", "turn " + (turn.role === "user" ? "is-user" : "is-bot"));
@@ -394,7 +399,10 @@
     syncVisualState();
     renderTurns();
 
-    const history = turns.slice(-12).map((t) => ({ role: t.role, text: t.text }));
+    // sources travel with each assistant turn so a vague follow-up ("tell me
+    // more") can stay anchored to the document just discussed instead of
+    // re-searching on a question with no content words of its own.
+    const history = turns.slice(-12).map((t) => ({ role: t.role, text: t.text, sources: t.sources || [] }));
     try {
       const result = await api().ask(q, history);
       const answer = result.answer || "I couldn't answer that.";
@@ -428,6 +436,14 @@
     feed.prepend(activityItem(record));
     while (feed.childElementCount > 80) feed.lastElementChild.remove();
     if (record.moved) toast("Filed " + record.name + " → " + record.category);
+    // Every indexed/moved file changes the Indexed/Filed/Size tiles, but this
+    // fires once per file and a folder drop can queue dozens at once — debounce
+    // so a burst collapses into one state() round-trip instead of one each.
+    if (statsRefreshTimer) clearTimeout(statsRefreshTimer);
+    statsRefreshTimer = setTimeout(() => {
+      statsRefreshTimer = null;
+      refreshStats();
+    }, 800);
   });
 
   // One source of truth for the "speaking" visual state, whichever engine is
