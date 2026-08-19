@@ -374,6 +374,9 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
   gap: 10px;
   width: 100%;
 }
+/* Every ask lives in the header menu now, so the grid is normally empty —
+   drop it out of the flex flow rather than leave the hero's gap behind it. */
+.suggestions:empty { display: none; }
 .suggestion {
   border: 1px solid var(--line);
   border-radius: 12px;

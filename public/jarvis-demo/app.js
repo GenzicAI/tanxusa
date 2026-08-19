@@ -161,15 +161,20 @@
       "v" + state.version + (state.tts ? " · voice ready" : " · no voice engine") +
       "\n" + state.data_dir;
 
-    if (!$("suggestions").childElementCount) renderSuggestions(b.suggestions || []);
+    // Guarded by its own flag, not by a child count: with every ask in the
+    // header menu the hero grid is legitimately empty, and a count check would
+    // rebuild the menu on every state poll — under the user's cursor.
+    if (!suggestionsRendered) renderSuggestions(b.suggestions || []);
   }
 
-  /* Only the first four asks get a tile. The rest go behind the bolt pill in
-     the header, which keeps the hero to a single row of tiles and leaves the
-     space below the grid free for what comes next. */
-  const HERO_SUGGESTIONS = 4;
+  /* How many asks get their own tile in the hero. All of them now live behind
+     the bolt pill in the header instead, so the orb has the whole column —
+     raise this if a future build wants headline tiles back. */
+  const HERO_SUGGESTIONS = 0;
+  let suggestionsRendered = false;
 
   function renderSuggestions(list) {
+    suggestionsRendered = true;
     const box = $("suggestions");
     const menu = $("quickMenu");
     const pill = $("quickBtn");
@@ -427,7 +432,7 @@
       recognition.onerror = () => { listening = false; syncVisualState(); };
       recognition.onend = () => { listening = false; syncVisualState(); };
       $("miniOrb").title = "Tap to speak";
-      $("heroHint").textContent = "Tap the orb and ask, or pick a question below.";
+      $("heroHint").textContent = "Tap the orb and ask, or pick a question from More asks.";
       $("miniOrb").addEventListener("click", () => {
         if (listening) { recognition.stop(); listening = false; }
         else { handled = false; listening = true; recognition.start(); }

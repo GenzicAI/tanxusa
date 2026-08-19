@@ -106,9 +106,9 @@
             "answer from what's actually inside them, and name the documents I used.",
     },
     {
-      target: "#suggestions", panel: "activity", shape: "rounded",
-      text: "If you're not sure what to ask, start with one of these. They're real questions " +
-            "you can click.",
+      target: "#quickBtn", panel: "activity", shape: "rounded",
+      text: "If you're not sure what to ask, open this for a list of starter questions. " +
+            "They're real questions you can click.",
     },
     {
       target: "#input", panel: "activity",
