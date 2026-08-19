@@ -164,15 +164,54 @@
     if (!$("suggestions").childElementCount) renderSuggestions(b.suggestions || []);
   }
 
+  /* Only the first four asks get a tile. The rest go behind the bolt pill in
+     the header, which keeps the hero to a single row of tiles and leaves the
+     space below the grid free for what comes next. */
+  const HERO_SUGGESTIONS = 4;
+
   function renderSuggestions(list) {
     const box = $("suggestions");
+    const menu = $("quickMenu");
+    const pill = $("quickBtn");
     box.innerHTML = "";
-    list.slice(0, 10).forEach((text) => {
+    menu.innerHTML = "";
+
+    list.slice(0, HERO_SUGGESTIONS).forEach((text) => {
       const btn = el("button", "suggestion", text);
       btn.type = "button";
       btn.addEventListener("click", () => send(text));
       box.appendChild(btn);
     });
+
+    const overflow = list.slice(HERO_SUGGESTIONS);
+    overflow.forEach((text) => {
+      const item = el("button", "quick-item", text);
+      item.type = "button";
+      item.setAttribute("role", "menuitem");
+      item.addEventListener("click", () => {
+        closeQuickMenu();
+        send(text);
+      });
+      menu.appendChild(item);
+    });
+    // Nothing left over means no menu to open — hide the pill rather than
+    // offer an empty dropdown.
+    pill.hidden = overflow.length === 0;
+    if (pill.hidden) closeQuickMenu();
+  }
+
+  function closeQuickMenu() {
+    $("quickMenu").hidden = true;
+    $("quickBtn").classList.remove("is-open");
+    $("quickBtn").setAttribute("aria-expanded", "false");
+  }
+
+  function toggleQuickMenu() {
+    const menu = $("quickMenu");
+    const open = menu.hidden;
+    menu.hidden = !open;
+    $("quickBtn").classList.toggle("is-open", open);
+    $("quickBtn").setAttribute("aria-expanded", String(open));
   }
 
   function renderTurns() {
@@ -400,12 +439,21 @@
       $("heroOrb").parentElement.addEventListener("click", () => window.JarvisVoice.stop());
     }
 
+    $("quickBtn").addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleQuickMenu();
+    });
+    $("quickMenu").addEventListener("click", (e) => e.stopPropagation());
+    document.addEventListener("click", () => closeQuickMenu());
+
     $("guideBtn").addEventListener("click", () => startGuide());
     $("guideSkip").addEventListener("click", () => window.JarvisGuide.skip());
     // Escape is the reflex for "get this off my screen"; the guide is optional,
     // so it must honour it.
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && window.JarvisGuide.running) window.JarvisGuide.skip();
+      if (e.key !== "Escape") return;
+      if (!$("quickMenu").hidden) closeQuickMenu();
+      if (window.JarvisGuide.running) window.JarvisGuide.skip();
     });
 
     $("muteBtn").addEventListener("click", async () => {

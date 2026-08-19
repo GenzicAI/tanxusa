@@ -249,6 +249,8 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
 }
 
 .chat-head {
+  /* Positioning context for the "More asks" dropdown. */
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -270,6 +272,62 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
   place-items: center;
 }
 .icon-btn:hover { color: var(--ink); }
+
+/* Overflow menu for the asks that no longer fit the four-tile hero grid.
+   It hangs off the chat header (see .chat-head's position: relative) rather
+   than off the pill itself: anchored to the pill, a 290px panel ran off the
+   left edge on a phone, because the pill sits two icon buttons in from the
+   column's right edge. */
+.quick-wrap { display: contents; }
+.pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--ink2);
+  border-radius: 999px;
+  padding: 6px 12px 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: 0.15s;
+  white-space: nowrap;
+}
+.pill-btn:hover, .pill-btn.is-open { border-color: var(--accent-dim); color: var(--ink); }
+.pill-btn svg { color: var(--accent); }
+
+.quick-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 40;
+  /* Anchored to the button's right edge, so the cap keeps it inside the
+     viewport on a phone instead of running off the left. */
+  width: max-content;
+  min-width: min(260px, 78vw);
+  max-width: min(320px, 78vw);
+  max-height: 60vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+}
+.quick-item {
+  border: 0;
+  background: none;
+  color: var(--ink2);
+  text-align: left;
+  padding: 9px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.3;
+  cursor: pointer;
+}
+.quick-item:hover { background: var(--panel2); color: var(--ink); }
 .icon-btn.is-off { color: var(--ink3); opacity: 0.6; }
 
 .scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 12px 0; }

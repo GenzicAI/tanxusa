@@ -137,6 +137,15 @@
                a permanent complaint rather than information. -->
           <div class="chat-title" id="chatTitle">Jarvis</div>
           <div class="row">
+            <!-- The hero grid shows only the four headline asks; the rest live
+                 here so the space below stays free for the next feature. -->
+            <div class="quick-wrap">
+              <button class="pill-btn" id="quickBtn" type="button" aria-haspopup="true" aria-expanded="false" title="More things you can ask">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <span>More asks</span>
+              </button>
+              <div class="quick-menu" id="quickMenu" role="menu" hidden></div>
+            </div>
             <button class="icon-btn" id="guideBtn" title="Show me how this works">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             </button>

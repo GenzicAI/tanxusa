@@ -15,14 +15,16 @@
     assistant_name: "Jarvis",
     accent: "#38e08a",
     accent_dim: "#1f7a4c",
+    // Order matters: app.js tiles the first four in the hero grid and puts the
+    // remainder behind the bolt menu in the chat header.
     suggestions: [
       "What did you file today?",
-      "Summarise the newest document in my folder.",
       "Find every invoice from last month.",
-      "Which contracts mention auto-renewal?",
-      "What's in the latest spreadsheet?",
       "Search my files for pricing.",
       "Organize my watch folder now.",
+      "Summarise the newest document in my folder.",
+      "Which contracts mention auto-renewal?",
+      "What's in the latest spreadsheet?",
       "Which files are the largest?",
       "Show me everything you filed as Reports.",
     ],
