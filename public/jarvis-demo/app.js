@@ -9,8 +9,53 @@
  * original used for its local-voice path.
  */
 (function () {
+  /* Say something when the UI dies.
+   *
+   * index.html carries the whole layout as static markup — rail, tabs, orb
+   * canvas, composer — so if this script stops running the window still LOOKS
+   * like the app while nothing responds and Python never hears from the page.
+   * That is indistinguishable from a hang, and reports it as one.
+   *
+   * Installed before anything else here can throw, and deliberately using no
+   * helper defined below it (const declarations further down are still in their
+   * temporal dead zone while this runs).
+   */
+  function fatal(message) {
+    try {
+      var bar = document.getElementById("fatalBar");
+      if (!bar) {
+        bar = document.createElement("div");
+        bar.id = "fatalBar";
+        bar.className = "fatal-bar";
+        (document.body || document.documentElement).appendChild(bar);
+      }
+      bar.textContent = "The interface failed to start: " + message +
+        " — please reopen Jarvis, and send the log (Settings → Open data folder).";
+      var bridge = window.pywebview && window.pywebview.api;
+      if (bridge && bridge.note) bridge.note("FATAL in UI: " + message);
+    } catch (err) {
+      /* nothing left to try */
+    }
+  }
+
+  window.addEventListener("error", (e) => {
+    fatal((e && e.message) || "unknown error");
+  });
+  window.addEventListener("unhandledrejection", (e) => {
+    fatal("unhandled promise rejection: " + ((e && e.reason && e.reason.message) || e.reason || "unknown"));
+  });
+
   const $ = (id) => document.getElementById(id);
   const api = () => window.pywebview && window.pywebview.api;
+
+  /** The drawing helpers live in separate script files; a build or extraction
+   *  that drops one of them must fail loudly, not leave a dead window. */
+  function requireGlobal(name) {
+    if (typeof window[name] !== "function") {
+      throw new Error(name + " is missing (a script file failed to load)");
+    }
+    return window[name];
+  }
 
   let state = null;
   let turns = [];
@@ -30,11 +75,13 @@
 
   // Real loudness of the neural voice when it's playing in the page; a
   // synthesised envelope only on the offline-voice fallback.
-  const amplitude = () => window.JarvisVoice.amplitude();
+  const amplitude = () => (window.JarvisVoice ? window.JarvisVoice.amplitude() : 0);
 
-  const hero = window.mountOrb($("heroOrb"), { getAmplitude: amplitude });
-  const mini = window.mountOrb($("miniOrbCanvas"), { getAmplitude: amplitude });
-  const wave = window.mountWave($("wave"), { height: 40, getAmplitude: amplitude });
+  const mountOrb = requireGlobal("mountOrb");
+  const mountWave = requireGlobal("mountWave");
+  const hero = mountOrb($("heroOrb"), { getAmplitude: amplitude });
+  const mini = mountOrb($("miniOrbCanvas"), { getAmplitude: amplitude });
+  const wave = mountWave($("wave"), { height: 40, getAmplitude: amplitude });
 
   function syncVisualState() {
     const s = orbState();
@@ -662,9 +709,24 @@
     });
   }
 
+  let started = false;
+
   function start() {
-    wire();
-    syncVisualState();
+    // pywebviewready can arrive after the ready-check below has already run;
+    // both paths lead here, and the app must be built exactly once.
+    if (started) return;
+    // Refuse to build against a half-injected bridge; the poll below will call
+    // again once the methods are really there.
+    if (!bridgeReady()) return;
+    started = true;
+    // Wiring the controls must never cost us the boot call: an exception in
+    // here used to leave the page looking alive with Python never contacted.
+    try {
+      wire();
+      syncVisualState();
+    } catch (err) {
+      fatal((err && err.message) || String(err));
+    }
     api().boot().then((s) => {
       renderState(s);
       loadActivity();
@@ -675,9 +737,39 @@
       if (s && s.config && !s.config.guide_seen) {
         setTimeout(startGuide, 700);
       }
+    }, (err) => {
+      fatal("the backend did not answer (" + ((err && err.message) || err) + ")");
     });
   }
 
-  if (window.pywebview && window.pywebview.api) start();
+  /* Is the bridge REALLY usable?
+   *
+   * Testing `window.pywebview.api` is not enough, and that was the bug behind
+   * the window that came up looking alive and did nothing: pywebview injects
+   * `window.pywebview = { api: {} }` first and only fills the methods in
+   * afterwards, so between those two moments the object is truthy and empty.
+   * Anything that starts in that gap dies on `api(...).boot is not a function`,
+   * taking the whole script — and every event handler in it — with it.
+   */
+  const bridgeReady = () =>
+    !!(window.pywebview && window.pywebview.api &&
+       typeof window.pywebview.api.boot === "function");
+
+  if (bridgeReady()) start();
   else window.addEventListener("pywebviewready", start);
+
+  // Belt and braces for the event never arriving: keep checking for the real
+  // method, and if it never turns up, say so rather than presenting a window
+  // that looks like the app and answers nothing.
+  let waited = 0;
+  const readyPoll = setInterval(() => {
+    if (started) { clearInterval(readyPoll); return; }
+    if (bridgeReady()) {
+      clearInterval(readyPoll);
+      start();
+    } else if ((waited += 250) >= 20000) {
+      clearInterval(readyPoll);
+      fatal("the page never connected to the app");
+    }
+  }, 250);
 })();
