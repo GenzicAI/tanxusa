@@ -316,6 +316,10 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
   background: var(--panel);
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
 }
+/* Must be spelled out: a class rule setting `display` outranks the UA
+   stylesheet's `[hidden] { display: none }`, so without this the panel stays
+   painted no matter what the hidden attribute says. */
+.quick-menu[hidden] { display: none; }
 .quick-item {
   border: 0;
   background: none;
