@@ -154,6 +154,19 @@ export const galleryProjects: GalleryProject[] = [
     ],
   },
   {
+    slug: 'jarvis-desktop-assistant',
+    title: 'Jarvis Desktop Assistant',
+    category: 'AI Agents & Platforms',
+    tagline: 'Agentic File-Filing Desktop App',
+    url: 'https://tanxusa.com/jarvis-demo/',
+    features: [
+      'Watches a folder and auto-files new documents',
+      'Reads inside Office, PDF & CSV files to answer questions',
+      'Natural voice replies with a live spoken walkthrough',
+      'One-click undo on every filing decision',
+    ],
+  },
+  {
     slug: 'voice-translator',
     title: 'Genzic Voice Translator',
     category: 'Voice & Concierge',
