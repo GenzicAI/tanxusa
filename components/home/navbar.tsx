@@ -25,7 +25,6 @@ export function Navbar() {
           <a href="#services" className="text-sm text-gray-600 hover:text-emerald-600 transition-colors">Services</a>
           <a href="#deliveries" className="text-sm text-gray-600 hover:text-emerald-600 transition-colors">Recent Work</a>
           <a href="#why" className="text-sm text-gray-600 hover:text-emerald-600 transition-colors">Why TanXUSA</a>
-          <a href="/jarvis-demo/" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-600 hover:text-emerald-600 transition-colors">Jarvis AI Demo</a>
           <a href="https://genzic.ai" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-600 hover:text-emerald-600 transition-colors">Genzic.AI</a>
         </div>
 
@@ -55,7 +54,6 @@ export function Navbar() {
               <a href="#services" onClick={() => setIsOpen(false)} className="text-sm text-gray-600">Services</a>
               <a href="#deliveries" onClick={() => setIsOpen(false)} className="text-sm text-gray-600">Recent Work</a>
               <a href="#why" onClick={() => setIsOpen(false)} className="text-sm text-gray-600">Why TanXUSA</a>
-              <a href="/jarvis-demo/" target="_blank" rel="noopener noreferrer" onClick={() => setIsOpen(false)} className="text-sm text-gray-600">Jarvis AI Demo</a>
               <a href="https://genzic.ai" target="_blank" rel="noopener noreferrer" onClick={() => setIsOpen(false)} className="text-sm text-gray-600">Genzic.AI</a>
             </div>
           </motion.div>
