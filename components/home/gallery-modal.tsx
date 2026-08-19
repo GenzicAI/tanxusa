@@ -61,10 +61,15 @@ export function GalleryModal({ project, onClose }: GalleryModalProps) {
                 <p className="truncate text-xs text-gray-400">{project.url.replace(/^https?:\/\//, '')}</p>
               </div>
               <div className="flex flex-shrink-0 items-center gap-2">
+                {/* Close the flyout as it expands. The iframe otherwise stays
+                    mounted and keeps running, and for a build that narrates
+                    itself the backgrounded copy talks over the new tab's own
+                    walkthrough. */}
                 <a
                   href={project.url}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={onClose}
                   className="flex h-11 items-center gap-1.5 rounded-lg bg-white/10 px-3 text-xs font-medium text-white hover:bg-white/20 transition-colors"
                 >
                   <ExternalLink className="h-3.5 w-3.5" />

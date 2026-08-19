@@ -136,6 +136,11 @@
 
   let index = 0;
   let running = false;
+  // Set while the tab is in the background. Browsers keep SpeechSynthesis
+  // running in hidden tabs, so without this a backgrounded copy of the demo
+  // (the gallery flyout, a tab the visitor switched away from) carries on
+  // narrating over whichever copy they are actually looking at.
+  let paused = false;
   // Bumped per step so a narration promise that settles late (because its step
   // was skipped past) can't advance the tour a second time.
   let narrationId = 0;
@@ -215,14 +220,14 @@
   }
 
   async function runStep(i) {
-    if (!running) return;
+    if (!running || paused) return;
     index = i;
     const step = STEPS[i];
 
     // Switching tabs re-lays out the rail; measure only after that has landed,
     // otherwise the ring is drawn against the panel we just left.
     if (showPanel(step.panel)) await new Promise((r) => setTimeout(r, 90));
-    if (!running) return;
+    if (!running || paused) return;
 
     const { text } = els();
     text.textContent = step.text;
@@ -247,7 +252,7 @@
     } catch (err) {
       spoken = false;
     }
-    if (!running || narrationId !== mine) return;
+    if (!running || paused || narrationId !== mine) return;
     clearTimeout(timer);
 
     if (spoken) {
@@ -263,7 +268,7 @@
   }
 
   function advance() {
-    if (!running) return;
+    if (!running || paused) return;
     clearTimeout(timer);
     if (index < STEPS.length - 1) runStep(index + 1);
     else stop(true);
@@ -309,6 +314,24 @@
   }
   window.addEventListener("resize", reposition);
   document.addEventListener("scroll", reposition, true);
+
+  // Going into the background silences the tour rather than letting it run on
+  // unheard; coming back re-narrates the step the visitor was left on, so they
+  // hear a whole step instead of rejoining halfway through a sentence.
+  document.addEventListener("visibilitychange", () => {
+    if (!running) return;
+    if (document.hidden) {
+      paused = true;
+      clearTimeout(timer);
+      // Invalidate the in-flight narration so its promise can't advance the
+      // tour once it settles.
+      narrationId++;
+      window.JarvisVoice.stop();
+    } else if (paused) {
+      paused = false;
+      runStep(index);
+    }
+  });
 
   window.JarvisGuide = {
     start: start,
