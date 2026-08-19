@@ -12,8 +12,17 @@ export function FooterSection() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
-              <img src="/tanxusa-logo.svg" alt="TanXUSA logo" className="h-12 w-auto object-contain brightness-0 invert" />
+            {/* Same treatment as the navbar mark: the source SVG is a 2000x2000
+                square whose artwork is only a thin horizontal band, so it's scaled
+                to h-32 and pulled up to sit centred in a nav-height box. No
+                brightness/invert filter — that flattened the white letters, black
+                outline and red X into a single white silhouette. */}
+            <div className="relative w-24 h-20 mb-4">
+              <img
+                src="/tanxusa-logo.svg"
+                alt="TanXUSA logo"
+                className="absolute left-0 top-[-12.8px] h-32 w-auto max-w-none object-contain"
+              />
             </div>
             <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
               The execution and delivery arm of Genzic.AI. We turn strategy into reality with AI agents and expert delivery teams.
