@@ -43,6 +43,19 @@
     wave.setState(s);
   }
 
+  // Filled in by wire(), reported to the log once boot() has resolved.
+  let capabilityNote = "";
+
+  /** Write one line into the app's log file. Never throws, never blocks. */
+  function note(message) {
+    try {
+      const bridge = api();
+      if (bridge && bridge.note) bridge.note(message);
+    } catch (err) {
+      /* the demo build has no such method, and the window may be closing */
+    }
+  }
+
   let toastTimer = 0;
   function toast(message) {
     const el = $("toast");
@@ -405,17 +418,20 @@
       $("send").disabled = !$("input").value.trim() || busy;
     });
 
-    // The orb button stops the voice mid-answer, and starts dictation when the
-    // renderer actually provides speech recognition. WebView2 usually does not,
-    // so this degrades to a stop button rather than a dead control.
+    // Both orbs do the same thing, the way they do in the Toast build: tap to
+    // dictate where the renderer provides speech recognition, otherwise tap to
+    // shut the voice up mid-answer. The big hero orb used to be wired ONLY in
+    // the no-recognition case, so on a machine that HAS recognition the hint
+    // said "tap the orb" and tapping it did nothing at all.
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition = null;
+    let handled = false;
+
     if (SR) {
       recognition = new SR();
       recognition.continuous = false;
       recognition.interimResults = false;
       recognition.lang = navigator.language || "en-US";
-      let handled = false;
       recognition.onresult = (e) => {
         // Guard carried over from the Victoria build: some engines fire this
         // repeatedly for one utterance despite interimResults=false, which
@@ -429,20 +445,74 @@
         recognition.stop();
         send(last[0].transcript);
       };
-      recognition.onerror = () => { listening = false; syncVisualState(); };
-      recognition.onend = () => { listening = false; syncVisualState(); };
-      $("miniOrb").title = "Tap to speak";
-      $("heroHint").textContent = "Tap the orb and ask, or pick a question from More asks.";
-      $("miniOrb").addEventListener("click", () => {
-        if (listening) { recognition.stop(); listening = false; }
-        else { handled = false; listening = true; recognition.start(); }
+      // Say why nothing happened. The engine object exists in more renderers
+      // than can actually reach a speech service, and a silent failure here is
+      // indistinguishable from a dead button.
+      recognition.onerror = (e) => {
+        listening = false;
         syncVisualState();
-      });
-    } else {
-      $("miniOrb").title = "Stop speaking";
-      $("miniOrb").addEventListener("click", () => window.JarvisVoice.stop());
-      $("heroOrb").parentElement.addEventListener("click", () => window.JarvisVoice.stop());
+        note("speech recognition error: " + ((e && e.error) || "unknown"));
+        const why = {
+          "not-allowed": "Microphone access was blocked. Type your question instead.",
+          "service-not-allowed": "Speech recognition isn't available in this window. Type your question instead.",
+          network: "Speech recognition needs a connection. Type your question instead.",
+          "audio-capture": "No microphone found. Type your question instead.",
+        };
+        if (e && e.error !== "aborted" && e.error !== "no-speech") {
+          toast(why[e && e.error] || "Couldn't start the microphone. Type your question instead.");
+        }
+      };
+      recognition.onend = () => { listening = false; syncVisualState(); };
     }
+
+    function toggleMic() {
+      if (!recognition) {
+        // No dictation on this renderer — the orb is a stop button.
+        window.JarvisVoice.stop();
+        api().stop_speaking();
+        return;
+      }
+      if (listening) {
+        recognition.stop();
+        listening = false;
+        syncVisualState();
+        return;
+      }
+      // Never listen over the top of the assistant's own voice.
+      window.JarvisVoice.stop();
+      api().stop_speaking();
+      handled = false;
+      listening = true;
+      syncVisualState();
+      try {
+        recognition.start();
+      } catch (err) {
+        // start() throws if a previous session is still closing down.
+        listening = false;
+        syncVisualState();
+        toast("Microphone is still busy — try again in a moment.");
+      }
+    }
+
+    // What this machine's renderer can actually do, reported once the bridge is
+    // live (see start()), so "the orb doesn't listen" is diagnosable from the
+    // log file without devtools.
+    capabilityNote = "speech recognition " + (recognition ? "available" : "NOT available") +
+      "; microphone API " +
+      (navigator.mediaDevices && navigator.mediaDevices.getUserMedia ? "present" : "absent");
+
+    const micTitle = recognition ? "Tap to speak" : "Stop speaking";
+    $("miniOrb").title = micTitle;
+    $("miniOrb").addEventListener("click", toggleMic);
+    // The hero orb's canvas fills its row, so the whole empty middle of the
+    // screen is the tap target — same as the `fill` orb in the Toast build.
+    const heroOrb = $("heroOrb").parentElement;
+    heroOrb.title = micTitle;
+    heroOrb.classList.toggle("is-tappable", true);
+    heroOrb.addEventListener("click", toggleMic);
+    $("heroHint").textContent = recognition
+      ? "Tap the orb and ask, or pick a question from More asks."
+      : "Ask about anything in your folder, or pick a question from More asks.";
 
     $("quickBtn").addEventListener("click", (e) => {
       e.stopPropagation();
@@ -598,6 +668,7 @@
     api().boot().then((s) => {
       renderState(s);
       loadActivity();
+      note(capabilityNote);
       // First launch only. `guide_seen` is written when the tour finishes OR is
       // skipped, so a user who skips is never shown it again uninvited — the
       // help button in the header replays it on demand.
