@@ -61,20 +61,22 @@ export function GalleryModal({ project, onClose }: GalleryModalProps) {
                 <p className="truncate text-xs text-gray-400">{project.url.replace(/^https?:\/\//, '')}</p>
               </div>
               <div className="flex flex-shrink-0 items-center gap-2">
-                {/* Close the flyout as it expands. The iframe otherwise stays
+                {/* Closes the flyout as it expands. The iframe otherwise stays
                     mounted and keeps running, and for a build that narrates
                     itself the backgrounded copy talks over the new tab's own
                     walkthrough. */}
-                <a
-                  href={project.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={onClose}
-                  className="flex h-11 items-center gap-1.5 rounded-lg bg-white/10 px-3 text-xs font-medium text-white hover:bg-white/20 transition-colors"
-                >
-                  <ExternalLink className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Open in New Tab</span>
-                </a>
+                {!project.noNewTab && (
+                  <a
+                    href={project.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={onClose}
+                    className="flex h-11 items-center gap-1.5 rounded-lg bg-white/10 px-3 text-xs font-medium text-white hover:bg-white/20 transition-colors"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Open in New Tab</span>
+                  </a>
+                )}
                 <button
                   onClick={onClose}
                   aria-label="Close preview"
@@ -98,17 +100,21 @@ export function GalleryModal({ project, onClose }: GalleryModalProps) {
                     <>
                       <AlertTriangle className="h-8 w-8 text-amber-400" />
                       <p className="text-sm text-gray-300 max-w-xs">
-                        This build resists embedded preview. Open it directly to explore the full experience.
+                        {project.noNewTab
+                          ? 'This preview didn’t load. Close this and launch it again.'
+                          : 'This build resists embedded preview. Open it directly to explore the full experience.'}
                       </p>
-                      <a
-                        href={project.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-2 inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-600 transition-colors"
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                        Open in New Tab
-                      </a>
+                      {!project.noNewTab && (
+                        <a
+                          href={project.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-2 inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-600 transition-colors"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                          Open in New Tab
+                        </a>
+                      )}
                     </>
                   )}
                 </div>

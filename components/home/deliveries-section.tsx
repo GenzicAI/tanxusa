@@ -102,15 +102,17 @@ export function DeliveriesSection() {
                     <PlayCircle className="h-4 w-4" />
                     Launch Live Preview
                   </button>
-                  <a
-                    href={project.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`Open ${project.title} in a new tab`}
-                    className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border border-gray-200 text-gray-500 hover:border-emerald-300 hover:text-emerald-600 transition-colors"
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                  </a>
+                  {!project.noNewTab && (
+                    <a
+                      href={project.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Open ${project.title} in a new tab`}
+                      className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border border-gray-200 text-gray-500 hover:border-emerald-300 hover:text-emerald-600 transition-colors"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  )}
                 </div>
               </div>
             </motion.div>

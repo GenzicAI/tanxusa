@@ -16,6 +16,11 @@ export interface GalleryProject {
    *  capture — use this when the live page doesn't crop well as a preview
    *  (e.g. a dense desktop-app layout instead of a single hero screen). */
   image?: string;
+  /** Hides both "open in a new tab" controls (the card icon and the flyout
+   *  header link), leaving the embedded preview as the only way in. For a
+   *  build that narrates itself, a second copy in another tab talks over the
+   *  first, so it is only coherent when viewed one instance at a time. */
+  noNewTab?: boolean;
 }
 
 export const galleryCategories: GalleryCategory[] = [
@@ -164,6 +169,7 @@ export const galleryProjects: GalleryProject[] = [
     tagline: 'Agentic File-Filing Desktop App',
     url: 'https://tanxusa.com/jarvis-demo/',
     image: '/jarvis-hero.svg',
+    noNewTab: true,
     features: [
       'Watches a folder and auto-files new documents',
       'Reads inside Office, PDF & CSV files to answer questions',
