@@ -12,6 +12,10 @@ export interface GalleryProject {
   tagline: string;
   url: string;
   features: string[];
+  /** Optional static card thumbnail. Falls back to a live screenshotUrl()
+   *  capture — use this when the live page doesn't crop well as a preview
+   *  (e.g. a dense desktop-app layout instead of a single hero screen). */
+  image?: string;
 }
 
 export const galleryCategories: GalleryCategory[] = [
@@ -159,6 +163,7 @@ export const galleryProjects: GalleryProject[] = [
     category: 'AI Agents & Platforms',
     tagline: 'Agentic File-Filing Desktop App',
     url: 'https://tanxusa.com/jarvis-demo/',
+    image: '/jarvis-hero.svg',
     features: [
       'Watches a folder and auto-files new documents',
       'Reads inside Office, PDF & CSV files to answer questions',

@@ -68,7 +68,7 @@ export function DeliveriesSection() {
             >
               <div className="relative aspect-video overflow-hidden bg-gray-900">
                 <Image
-                  src={screenshotUrl(project.url)}
+                  src={project.image ?? screenshotUrl(project.url)}
                   alt={`${project.title} live preview screenshot`}
                   fill
                   loading="lazy"
