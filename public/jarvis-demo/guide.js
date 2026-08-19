@@ -23,9 +23,13 @@
   const $ = (id) => document.getElementById(id);
   const api = () => window.pywebview && window.pywebview.api;
 
-  // target: CSS selector of the control to highlight (null = no highlight)
-  // panel:  which rail tab must be showing for that control to exist
-  // shape:  'circle' hugs a round control; anything else uses a rounded box
+  // target:  CSS selector of the control to highlight (null = no highlight)
+  // panel:   which rail tab must be showing for that control to exist
+  // shape:   'circle' hugs a round control; anything else uses a rounded box
+  // caption: 'chat' moves the narration out of the rail and into the empty band
+  //          left of the orb. The Settings panel is the one panel whose controls
+  //          reach the bottom of the rail, so the caption's usual home sits on
+  //          top of them; every other step keeps the rail position.
   const STEPS = [
     {
       target: null, panel: null,
@@ -76,24 +80,24 @@
             "at their names — a phrase from page four of a contract, or an amount on an invoice.",
     },
     {
-      target: "#apiKey", panel: "settings",
+      target: "#apiKey", panel: "settings", caption: "chat",
       text: "Now Settings. Paste an AI key here — Gemini or OpenAI — and I'll read and " +
             "sort your documents far more intelligently. I check the key before saving it, " +
             "and it's encrypted so only you on this computer can use it. " +
             "Without a key I still work, just with simpler rules.",
     },
     {
-      target: "#categories", panel: "settings",
+      target: "#categories", panel: "settings", caption: "chat",
       text: "These are the folders I file into. Change them to whatever suits your work — " +
             "they become real subfolders inside the folder I'm watching.",
     },
     {
-      target: "#confidence", panel: "settings",
+      target: "#confidence", panel: "settings", caption: "chat",
       text: "This slider is how sure I have to be before I move something. " +
             "Anything below it, I read and remember but leave exactly where it is.",
     },
     {
-      target: ".panel[data-panel='settings'] .check", panel: "settings", shape: "rounded",
+      target: ".panel[data-panel='settings'] .check", panel: "settings", shape: "rounded", caption: "chat",
       text: "And these switches control the automation itself — whether I move files on my " +
             "own, whether I watch subfolders, and whether I read my answers out loud.",
     },
@@ -204,6 +208,82 @@
     return r;
   }
 
+  /**
+   * Put the narration where it doesn't cover what it's describing.
+   *
+   * Default is the rail's empty lower half (see .guide-caption). Steps marked
+   * `caption: "chat"` move into the band between the chat column's left edge
+   * and the orb.
+   *
+   * The band has to be measured, not assumed. #heroOrb is a full-width canvas
+   * and orb.js draws a circle of radius min(w, h) / 2 centred inside it, so the
+   * element's own rect says nothing about where the visible orb starts. And
+   * because the orb now fills the column, how much room is left beside it
+   * depends on the window: wide and short leaves plenty, tall leaves little.
+   *
+   * So this walks candidate slots down the column and keeps the one that can be
+   * widest without touching the circle — clearance against a circle depends on
+   * height, and the arc gives more room away from the centre line. Ties go to
+   * the topmost slot, which is where the orb is smallest on a short window.
+   * If even the best slot is too narrow to read in, the caption stays in the
+   * rail rather than being squeezed over the orb.
+   */
+  function placeCaption(step) {
+    const { caption } = els();
+    const rail = () => {
+      caption.classList.remove("is-chat");
+      caption.style.left = "";
+      caption.style.top = "";
+      caption.style.width = "";
+    };
+    if (!step || step.caption !== "chat") return rail();
+
+    const chat = document.querySelector(".chat");
+    const head = document.querySelector(".chat-head");
+    const orb = $("heroOrb");
+    if (!chat || !head || !orb) return rail();
+    const c = chat.getBoundingClientRect();
+    const o = orb.getBoundingClientRect();
+    if (!o.width || !o.height) return rail();
+
+    const GAP = 18;
+    const MIN_WIDTH = 150;
+    const MAX_WIDTH = 300;
+    const r = Math.min(o.width, o.height) / 2;
+    const cx = o.left + o.width / 2;
+    const cy = o.top + o.height / 2;
+
+    // The slot must clear the header, and stop above the hint under the orb.
+    const hint = $("heroHint");
+    const top0 = head.getBoundingClientRect().bottom + 10;
+    const hintRect = hint ? hint.getBoundingClientRect() : null;
+    const bottom0 = (hintRect && hintRect.height ? hintRect.top : c.bottom) - 12;
+    const height = caption.offsetHeight || 140;
+    if (bottom0 - top0 < height) return rail();
+
+    // Leftmost point of the circle across the vertical span [t, t + height].
+    const circleLeftOver = (t) => {
+      let left = Infinity;
+      for (let y = t; y <= t + height; y += 8) {
+        const dy = Math.abs(y - cy);
+        left = Math.min(left, dy >= r ? Infinity : cx - Math.sqrt(r * r - dy * dy));
+      }
+      return left;
+    };
+
+    let best = null;
+    for (let t = top0; t <= bottom0 - height; t += 10) {
+      const width = Math.min(MAX_WIDTH, circleLeftOver(t) - c.left - GAP * 2);
+      if (!best || width > best.width + 0.5) best = { top: t, width: width };
+    }
+    if (!best || best.width < MIN_WIDTH) return rail();
+
+    caption.classList.add("is-chat");
+    caption.style.left = c.left + GAP + "px";
+    caption.style.width = best.width + "px";
+    caption.style.top = best.top + "px";
+  }
+
   function renderDots() {
     const { dots } = els();
     dots.innerHTML = "";
@@ -232,11 +312,14 @@
     const { text } = els();
     text.textContent = step.text;
     renderDots();
+    placeCaption(step);
     placeRing(step.target, step.shape, true);
     // The scroll started above is smooth/asynchronous in some cases, so
     // re-measure once it has settled rather than trusting the first rect.
     setTimeout(() => {
-      if (running && index === i) placeRing(step.target, step.shape, false);
+      if (!running || index !== i) return;
+      placeRing(step.target, step.shape, false);
+      placeCaption(step);
     }, 260);
 
     clearTimeout(timer);
@@ -283,6 +366,8 @@
     const { layer, ring } = els();
     layer.hidden = true;
     ring.hidden = true;
+    // Back to the rail, so a replay doesn't start out beside the orb.
+    placeCaption(null);
     document.body.classList.remove("guide-active");
     window.JarvisVoice.stop();
     try {
@@ -311,6 +396,7 @@
     if (!running) return;
     const step = STEPS[index];
     placeRing(step.target, step.shape, false);
+    placeCaption(step);
   }
   window.addEventListener("resize", reposition);
   document.addEventListener("scroll", reposition, true);

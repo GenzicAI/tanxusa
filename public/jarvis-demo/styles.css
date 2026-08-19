@@ -104,7 +104,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 /* While the walkthrough is narrating, its caption occupies the bottom of the
    rail. Reserving that space means a control the guide scrolls to can never
    end up hidden behind the very text describing it. */
-body.guide-active .panel { padding-bottom: 170px; }
+body.guide-active .panel { padding-bottom: 210px; }
 
 .folder-card {
   flex: none;
@@ -542,6 +542,13 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
   padding: 0;
   pointer-events: auto;
 }
+
+/* Settings steps only. The Settings panel is the one panel whose controls run
+   the full height of the rail, so the caption's usual home lands on top of the
+   checkboxes and the voice picker. Those steps move to the band left of the
+   orb; guide.js measures that band and sets left/top/width, since how much
+   room the orb leaves depends on the window size. */
+.guide-caption.is-chat { bottom: auto; }
 
 .guide-text {
   margin: 0;
