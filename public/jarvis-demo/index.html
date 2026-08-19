@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Jarvis Desktop Assistant — Live Demo | TanXUSA</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .demo-banner {
+        position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        padding: 8px 16px; font: 600 12px/1.4 -apple-system, Segoe UI, sans-serif;
+        background: #0d0f0e; color: #cfe8dc; border-bottom: 1px solid #2a302c;
+      }
+      .demo-banner a { color: #38e08a; text-decoration: none; }
+      .demo-banner a:hover { text-decoration: underline; }
+      .app { margin-top: 34px; height: calc(100vh - 34px) !important; }
+    </style>
+  </head>
+  <body>
+    <div class="demo-banner">
+      <span>🖥️ Live demo — nothing here is connected to real files or the internet</span>
+      <a href="/">← Back to TanXUSA.com</a>
+    </div>
+    <div class="app">
+      <!-- ---------------------------------------------------------------
+           Left rail: what the assistant is doing to the filesystem.
+           The chat column on the right is a direct port of the Victoria
+           assistant layout (orb, hint, suggestion grid, wave, composer).
+      ---------------------------------------------------------------- -->
+      <aside class="rail">
+        <header class="rail-head">
+          <div class="brand">
+            <span class="brand-name" id="brandName">Jarvis</span>
+            <span class="badge" id="watchBadge">idle</span>
+          </div>
+          <div class="brand-sub" id="brandSub">Genzic Agentic AI Assistant</div>
+        </header>
+
+        <div class="rail-tabs">
+          <button class="tab is-active" data-panel="activity">Activity</button>
+          <button class="tab" data-panel="files">Files</button>
+          <button class="tab" data-panel="settings">Settings</button>
+        </div>
+
+        <!-- Activity ------------------------------------------------- -->
+        <section class="panel is-active" data-panel="activity">
+          <div class="folder-card">
+            <div class="folder-label">Watch folder</div>
+            <div class="folder-path" id="folderPath">No folder selected</div>
+            <div class="row">
+              <button class="btn btn-accent" id="pickFolder">Choose folder</button>
+              <button class="btn" id="toggleWatch">Start</button>
+            </div>
+          </div>
+
+          <div class="stats" id="stats"></div>
+
+          <div class="row row-tight">
+            <button class="btn" id="organizeNow">Organize now</button>
+            <button class="btn" id="reindex">Re-index</button>
+          </div>
+
+          <div class="section-label">Recent activity</div>
+          <div class="feed" id="feed">
+            <div class="empty-note">Nothing yet. Choose a folder and I'll start watching it.</div>
+          </div>
+        </section>
+
+        <!-- Files ---------------------------------------------------- -->
+        <section class="panel" data-panel="files">
+          <input class="search" id="fileSearch" placeholder="Search inside your files…" />
+          <div class="feed" id="fileResults">
+            <div class="empty-note">Search the contents of every indexed document.</div>
+          </div>
+        </section>
+
+        <!-- Settings ------------------------------------------------- -->
+        <section class="panel" data-panel="settings">
+          <div class="field">
+            <label for="apiKey">AI API key</label>
+            <div class="row">
+              <input id="apiKey" type="password" placeholder="AIza… (Gemini) or sk-… (OpenAI)" />
+              <button class="btn btn-accent" id="saveKey">Save</button>
+            </div>
+            <div class="hint" id="keyStatus">No key set — running on offline rules.</div>
+          </div>
+
+          <div class="field">
+            <label for="categories">Folders to file into</label>
+            <textarea id="categories" rows="3" placeholder="Invoices, Contracts, Reports"></textarea>
+            <div class="hint">Comma separated. These become subfolders of your watch folder.</div>
+          </div>
+
+          <div class="field">
+            <label for="confidence">Filing confidence <span id="confidenceValue">0.55</span></label>
+            <input type="range" id="confidence" min="0" max="1" step="0.05" />
+            <div class="hint">Below this, a file is indexed but left where it is.</div>
+          </div>
+
+          <label class="check"><input type="checkbox" id="autoOrganize" /> <span>Move new files into folders automatically</span></label>
+          <label class="check"><input type="checkbox" id="recursive" /> <span>Watch subfolders too</span></label>
+          <label class="check"><input type="checkbox" id="indexExisting" /> <span>Index files already in the folder on launch</span></label>
+          <label class="check"><input type="checkbox" id="speakReplies" /> <span>Read answers aloud</span></label>
+
+          <div class="field">
+            <label for="voicePicker">Voice</label>
+            <div class="row">
+              <select id="voicePicker"></select>
+              <button class="btn" id="voicePreview">Preview</button>
+            </div>
+            <div class="hint" id="voiceHint"></div>
+          </div>
+
+          <label class="check"><input type="checkbox" id="naturalVoice" /> <span>Use the natural voice (needs internet)</span></label>
+
+          <div class="row row-tight">
+            <button class="btn" id="clearKey">Remove key</button>
+            <button class="btn" id="openData">Open data folder</button>
+          </div>
+          <div class="hint" id="versionNote"></div>
+        </section>
+      </aside>
+
+      <!-- ---------------------------------------------------------------
+           Chat column — the Victoria/Jarvis assistant layout.
+      ---------------------------------------------------------------- -->
+      <main class="chat">
+        <header class="chat-head">
+          <!-- Which brain is running (offline rules / gemini / openai) is stated
+               in Settings, next to the key field where it can be acted on. It
+               used to sit here as a subtitle, but on the main screen it read as
+               a permanent complaint rather than information. -->
+          <div class="chat-title" id="chatTitle">Jarvis</div>
+          <div class="row">
+            <button class="icon-btn" id="guideBtn" title="Show me how this works">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </button>
+            <button class="icon-btn" id="muteBtn" title="Mute voice replies">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+            </button>
+          </div>
+        </header>
+
+        <div class="scroll" id="scroll">
+          <div class="hero" id="hero">
+            <div class="hero-orb"><canvas id="heroOrb"></canvas></div>
+            <p class="hero-hint" id="heroHint">Ask about anything in your folder.</p>
+            <div class="suggestions" id="suggestions"></div>
+          </div>
+          <div class="turns" id="turns" hidden></div>
+        </div>
+
+        <canvas id="wave" class="wave"></canvas>
+
+        <form class="composer" id="composer">
+          <button type="button" class="mini-orb" id="miniOrb" title="Speak"><canvas id="miniOrbCanvas"></canvas></button>
+          <input id="input" placeholder="Ask about your files…" autocomplete="off" />
+          <button type="submit" class="send" id="send" disabled title="Send">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </form>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" hidden></div>
+
+    <!-- Spoken walkthrough. The layer itself never blocks clicks; only the
+         caption card does, so the app stays visible and honest underneath. -->
+    <div class="guide-layer" id="guideLayer" hidden>
+      <div class="guide-ring" id="guideRing" hidden></div>
+      <div class="guide-caption" id="guideCaption">
+        <p class="guide-text" id="guideText"></p>
+        <div class="guide-dots" id="guideDots"></div>
+        <button type="button" class="guide-skip" id="guideSkip">Skip</button>
+      </div>
+    </div>
+
+    <script src="demo-bridge.js"></script>
+    <script src="orb.js"></script>
+    <script src="wave.js"></script>
+    <script src="voice.js"></script>
+    <script src="guide.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
