@@ -4,6 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Jarvis Desktop Assistant — Live Demo | TanXUSA</title>
+    <!-- Next.js strips the trailing slash from /jarvis-demo/, which would
+         otherwise resolve every relative asset href against the site root
+         instead of this folder. Anchor them here instead. -->
+    <base href="/jarvis-demo/" />
     <link rel="stylesheet" href="styles.css" />
     <style>
       .demo-banner {
