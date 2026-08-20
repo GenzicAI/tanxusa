@@ -296,6 +296,17 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
 .pill-btn:hover, .pill-btn.is-open { border-color: var(--accent-dim); color: var(--ink); }
 .pill-btn svg { color: var(--accent); }
 
+.color-pill { padding: 5px 10px 5px 6px; }
+.color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgb(56, 224, 138);
+  box-shadow: 0 0 6px 1px rgba(56, 224, 138, 0.6);
+  flex: none;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
 .quick-menu {
   position: absolute;
   top: calc(100% + 6px);

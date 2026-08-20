@@ -84,6 +84,30 @@
   const mini = mountOrb($("miniOrbCanvas"), { getAmplitude: amplitude });
   const wave = mountWave($("wave"), { height: 40, getAmplitude: amplitude });
 
+  // Orb color pill: setOrbColor() (orb.js) is a shared module-level value, so
+  // one call repaints hero AND mini together — no per-instance wiring needed.
+  const ORB_COLORS = {
+    green: { rgb: "56, 224, 138", label: "Green" },
+    pink: { rgb: "255, 105, 180", label: "Hot Pink" },
+  };
+  function applyOrbColor(name) {
+    const c = ORB_COLORS[name] ? name : "green";
+    if (window.setOrbColor) window.setOrbColor(c);
+    const dot = $("colorDot");
+    const label = $("colorLabel");
+    const btn = $("colorBtn");
+    if (dot) {
+      dot.style.background = "rgb(" + ORB_COLORS[c].rgb + ")";
+      dot.style.boxShadow = "0 0 6px 1px rgba(" + ORB_COLORS[c].rgb + ", 0.6)";
+    }
+    if (label) label.textContent = ORB_COLORS[c].label;
+    if (btn) btn.title = "Orb color: " + ORB_COLORS[c].label + " (tap to switch)";
+    try { localStorage.setItem("jarvisOrbColor", c); } catch (err) { /* ignore */ }
+  }
+  let savedOrbColor = "green";
+  try { savedOrbColor = localStorage.getItem("jarvisOrbColor") || "green"; } catch (err) { /* ignore */ }
+  applyOrbColor(savedOrbColor);
+
   function syncVisualState() {
     const s = orbState();
     hero.setState(s);
@@ -585,6 +609,10 @@
     document.addEventListener("click", () => closeQuickMenu());
 
     $("guideBtn").addEventListener("click", () => startGuide());
+    $("colorBtn").addEventListener("click", () => {
+      const next = window.getOrbColor && window.getOrbColor() === "pink" ? "green" : "pink";
+      applyOrbColor(next);
+    });
     $("guideSkip").addEventListener("click", () => window.JarvisGuide.skip());
     // Escape is the reflex for "get this off my screen"; the guide is optional,
     // so it must honour it.

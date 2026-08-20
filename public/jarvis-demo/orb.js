@@ -10,9 +10,24 @@
  * miss a change.
  */
 (function () {
-  const ACCENT = "56, 224, 138";
+  // Orb color is a module-level mutable so every mounted orb (hero + mini)
+  // repaints in the same color the instant setOrbColor() is called — no need
+  // to touch individual instances.
+  const ORB_COLORS = {
+    green: "56, 224, 138",
+    pink: "255, 105, 180",
+  };
+  let colorName = "green";
+  let ACCENT = ORB_COLORS[colorName];
   const CORE_RED = [255, 92, 74];
-  const CORE_GREEN = [56, 224, 138];
+  let CORE_GREEN = ACCENT.split(",").map(Number);
+
+  function setOrbColor(name) {
+    if (!ORB_COLORS[name]) return;
+    colorName = name;
+    ACCENT = ORB_COLORS[name];
+    CORE_GREEN = ACCENT.split(",").map(Number);
+  }
 
   function mountOrb(canvas, opts) {
     const options = opts || {};
@@ -197,4 +212,6 @@
   }
 
   window.mountOrb = mountOrb;
+  window.setOrbColor = setOrbColor;
+  window.getOrbColor = function () { return colorName; };
 })();
