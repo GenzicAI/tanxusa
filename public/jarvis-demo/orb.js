@@ -163,7 +163,7 @@
         thinkMix += (thinkTarget - thinkMix) * 0.15;
         if (thinkMix > 0.01) {
           const sweep = Math.PI * 0.5;
-          const a = t / 55;
+          const a = t / 14;
           ctx.save();
           ctx.shadowColor = "rgba(" + ACCENT + ", " + thinkMix + ")";
           ctx.shadowBlur = 14;
