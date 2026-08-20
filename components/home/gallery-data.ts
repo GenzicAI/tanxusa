@@ -183,6 +183,7 @@ export const galleryProjects: GalleryProject[] = [
     category: 'Voice & Concierge',
     tagline: 'EN ↔ VI Real-Time Voice Translation',
     url: 'https://voice-translator-bay.vercel.app/',
+    image: '/voice-translator-hero.jpg',
     features: [
       'Install-free, browser-only, works on any phone',
       'Live English ↔ Vietnamese speech translation',
