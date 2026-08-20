@@ -80,7 +80,7 @@
 
   const mountOrb = requireGlobal("mountOrb");
   const mountWave = requireGlobal("mountWave");
-  const hero = mountOrb($("heroOrb"), { getAmplitude: amplitude });
+  const hero = mountOrb($("heroOrb"), { getAmplitude: amplitude, showThinkingRing: true });
   const mini = mountOrb($("miniOrbCanvas"), { getAmplitude: amplitude });
   const wave = mountWave($("wave"), { height: 40, getAmplitude: amplitude });
 

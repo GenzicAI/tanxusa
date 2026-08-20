@@ -58,6 +58,7 @@
     let t = 0;
     let level = 0;
     let coreMix = 0;
+    let thinkMix = 0;
     let raf = 0;
 
     function draw() {
@@ -152,6 +153,29 @@
       ctx.arc(cx, cy, coreR * 2.2, 0, Math.PI * 2);
       ctx.fillStyle = core;
       ctx.fill();
+
+      // Thinking indicator: a single bright glowing arc sweeping around the
+      // outer rail, hero orb only — the signal that Jarvis heard the
+      // question and is off retrieving the answer, distinct from the dim
+      // static ticks and the always-on counter-rotating arcs above.
+      if (options.showThinkingRing) {
+        const thinkTarget = state === "thinking" ? 1 : 0;
+        thinkMix += (thinkTarget - thinkMix) * 0.15;
+        if (thinkMix > 0.01) {
+          const sweep = Math.PI * 0.5;
+          const a = t / 55;
+          ctx.save();
+          ctx.shadowColor = "rgba(" + ACCENT + ", " + thinkMix + ")";
+          ctx.shadowBlur = 14;
+          ctx.beginPath();
+          ctx.arc(cx, cy, R * 0.94, a, a + sweep);
+          ctx.strokeStyle = "rgba(" + ACCENT + ", " + (0.85 * thinkMix) + ")";
+          ctx.lineWidth = 2;
+          ctx.lineCap = "round";
+          ctx.stroke();
+          ctx.restore();
+        }
+      }
 
       // Orbiting motes.
       for (let i = 0; i < 3; i++) {
