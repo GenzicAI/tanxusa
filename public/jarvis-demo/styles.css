@@ -440,11 +440,25 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
 .suggestion:hover { border-color: var(--accent-dim); color: var(--ink); }
 
 .turns { display: flex; flex-direction: column; gap: 12px; }
-.turn { display: flex; flex-direction: column; max-width: 85%; }
+.turn {
+  display: flex;
+  flex-direction: column;
+  max-width: 85%;
+  /* A flex item's default min-width is auto (its content's natural width),
+     which overrides max-width and lets a long unbroken token push the whole
+     turn wider than 85% instead of wrapping. Without this the effect only
+     shows up once the window gets narrow enough for it to matter. */
+  min-width: 0;
+}
 .turn.is-user { align-self: flex-end; align-items: flex-end; }
 .turn.is-bot { align-self: flex-start; }
 .bubble {
   white-space: pre-wrap;
+  /* File paths ("C:\Users\...\Invoices\7-28-26 PE.xlsx") are one unbroken
+     token to the browser — no spaces around the backslashes — so pre-wrap
+     alone lets them run straight past the bubble's edge instead of wrapping.
+     anywhere forces a break inside the token rather than overflowing it. */
+  overflow-wrap: anywhere;
   border-radius: 16px;
   padding: 10px 15px;
   font-size: 14.5px;
