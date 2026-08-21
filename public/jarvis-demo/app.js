@@ -129,6 +129,9 @@
   }
 
   let toastTimer = 0;
+  let toastTs = 0;
+  let toastTimeNode = null;
+
   function toast(message) {
     // The notice belongs under "Recent activity", next to the events it is
     // about. But that lives inside the Activity panel, and a hidden panel is
@@ -141,11 +144,36 @@
     const target = activityShowing ? inFeed : floatingToast();
     // Only ever one visible at a time.
     (activityShowing ? floatingToast() : inFeed).hidden = true;
-    target.textContent = message;
+
+    // In the column it stays until the next notice replaces it or the operator
+    // dismisses it. Vanishing after three seconds made sense while it floated
+    // over the chat — there it was in the way. Here it is the answer to "what
+    // did you just do", and an answer that erases itself before it can be read
+    // is no answer. It carries its own age so a notice left sitting can never
+    // be mistaken for something that just happened.
+    target.textContent = "";
+    target.appendChild(el("span", "toast-msg", message));
+    toastTs = Date.now() / 1000;
+    toastTimeNode = el("span", "toast-time", fmtWhen(toastTs));
+    target.appendChild(toastTimeNode);
+    const dismiss = el("button", "toast-x", "×");
+    dismiss.type = "button";
+    dismiss.title = "Dismiss";
+    dismiss.addEventListener("click", () => { target.hidden = true; });
+    target.appendChild(dismiss);
     target.hidden = false;
+
+    // The floating fallback still covers content, so it still gets out of the
+    // way on its own.
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => { target.hidden = true; }, 3200);
+    if (!activityShowing) {
+      toastTimer = setTimeout(() => { target.hidden = true; }, 3200);
+    }
   }
+
+  setInterval(() => {
+    if (toastTimeNode && toastTs) toastTimeNode.textContent = fmtWhen(toastTs);
+  }, 30000);
 
   function floatingToast() {
     let node = $("toastFloat");

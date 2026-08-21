@@ -567,17 +567,37 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
    covered the composer and sat far from the events it described. In flow, so
    it pushes the feed down for its few seconds rather than hiding anything. */
 .toast {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
   background: var(--panel2);
   border: 1px solid var(--accent-dim);
   color: var(--ink);
-  padding: 8px 12px;
+  padding: 8px 10px;
   border-radius: 8px;
   font-size: 12px;
   line-height: 1.4;
   margin-bottom: 8px;
-  overflow-wrap: anywhere;
 }
 .toast[hidden] { display: none; }
+.toast-msg { flex: 1; overflow-wrap: anywhere; }
+.toast-time {
+  flex: none;
+  font-size: 10px;
+  color: var(--ink3);
+  font-family: ui-monospace, Consolas, monospace;
+}
+.toast-x {
+  flex: none;
+  background: none;
+  border: 0;
+  color: var(--ink3);
+  font-size: 14px;
+  line-height: 1;
+  padding: 0 2px;
+  cursor: pointer;
+}
+.toast-x:hover { color: var(--ink); }
 /* Fallback used only when the Activity panel isn't the one on screen. */
 .toast.is-floating {
   position: fixed;
