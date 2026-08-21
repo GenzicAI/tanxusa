@@ -350,21 +350,32 @@
     // pill — "project" on a file Jarvis had filed into project/, and
     // "project" on one it had only tagged and left where it was. There is no
     // way to tell those apart, so a category showing up here read as proof a
-    // folder had been created when none had. The arrow means "moved into";
-    // a classified-only file gets a muted tag and says so on hover.
-    const classifiedOnly = kind !== "moved" && !!record.category &&
-      kind !== "deleted" && kind !== "error" && kind !== "undone";
+    // folder had been created when none had. The arrow means "moved into".
+    //
+    // A quieter style and a hover title were not enough: a pill reading
+    // "Resource Group" on a file still sitting in the watch folder is read as
+    // where the file IS, and with automatic moving switched off that is every
+    // file. So the pill says so in words — the style is the hint, the text is
+    // the fact.
+    // `filed` may be supplied by the caller when the file's real location is
+    // known (search results, where the path is right there). Without it, an
+    // event that isn't a "moved" left the file where it was, by definition.
+    const classifiedOnly = !!record.category &&
+      kind !== "deleted" && kind !== "error" && kind !== "undone" &&
+      (record.filed === undefined ? kind !== "moved" : !record.filed);
     const label =
-      kind === "moved" ? "→ " + (record.category || "filed")
-      : kind === "deleted" ? "removed"
+      kind === "deleted" ? "removed"
       : kind === "error" ? "error"
       : kind === "undone" ? "undone"
+      : classifiedOnly ? "not filed · " + record.category
+      : kind === "moved" ? "→ " + (record.category || "filed")
       : record.category || "indexed";
     const cat = el("div", "item-cat" + (classifiedOnly ? " is-tag" : ""), label);
     if (classifiedOnly) {
-      cat.title = "Classified as " + record.category +
-        " — indexed where it is, not moved. Turn on “Move new files into " +
-        "folders automatically” in Settings, or press Organize now.";
+      cat.title = "Still in your watch folder — not in a " + record.category +
+        " folder. Jarvis read it and would file it under " + record.category +
+        ". Turn on “Move new files into folders automatically” in Settings, " +
+        "or press Organize now.";
     }
     top.appendChild(cat);
     item.appendChild(top);
@@ -744,9 +755,18 @@
       return;
     }
     hits.forEach((hit) => {
+      // A search hit is a file that already exists somewhere, so its pill has
+      // to say where it actually is — not repeat the "not filed" default that
+      // is right for a fresh index event. A file is filed when one of the
+      // folders it sits under is its category, which is the same test the
+      // Filed tile uses (store.stats), and covers a category folder the
+      // operator has since subdivided by hand.
+      const parents = (hit.path || "").split(/[\\/]/).slice(0, -1);
+      const cat = (hit.category || "").toLowerCase();
       box.appendChild(activityItem({
         kind: "indexed", path: hit.path, name: hit.name,
         category: hit.category, note: hit.snippet, ts: hit.mtime,
+        filed: !!cat && parents.some((seg) => seg.toLowerCase() === cat),
       }));
     });
   }
