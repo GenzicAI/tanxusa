@@ -562,17 +562,32 @@ input[type="range"] { accent-color: var(--accent); width: 100%; }
 }
 .send:disabled { opacity: 0.35; cursor: default; }
 
+/* Sits in the activity column under "Recent activity", directly above the
+   feed it is reporting on — it used to float over the chat column, where it
+   covered the composer and sat far from the events it described. In flow, so
+   it pushes the feed down for its few seconds rather than hiding anything. */
 .toast {
+  background: var(--panel2);
+  border: 1px solid var(--accent-dim);
+  color: var(--ink);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+  overflow-wrap: anywhere;
+}
+.toast[hidden] { display: none; }
+/* Fallback used only when the Activity panel isn't the one on screen. */
+.toast.is-floating {
   position: fixed;
   left: 50%;
   bottom: 22px;
   transform: translateX(-50%);
-  background: var(--panel2);
-  border: 1px solid var(--accent-dim);
-  color: var(--ink);
-  padding: 9px 16px;
+  margin-bottom: 0;
   border-radius: 999px;
-  font-size: 12.5px;
+  padding: 9px 16px;
+  max-width: 70vw;
   z-index: 50;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
 }

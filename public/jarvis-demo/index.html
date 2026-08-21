@@ -66,6 +66,9 @@
           </div>
 
           <div class="section-label">Recent activity</div>
+          <!-- Notices sit at the top of the feed they are about, rather than
+               floating over the chat column where they covered the composer. -->
+          <div class="toast" id="toast" hidden></div>
           <div class="feed" id="feed">
             <div class="empty-note">Nothing yet. Choose a folder and I'll start watching it.</div>
           </div>
@@ -183,8 +186,6 @@
         </form>
       </main>
     </div>
-
-    <div class="toast" id="toast" hidden></div>
 
     <!-- Spoken walkthrough. The layer itself never blocks clicks; only the
          caption card does, so the app stays visible and honest underneath. -->

@@ -130,11 +130,32 @@
 
   let toastTimer = 0;
   function toast(message) {
-    const el = $("toast");
-    el.textContent = message;
-    el.hidden = false;
+    // The notice belongs under "Recent activity", next to the events it is
+    // about. But that lives inside the Activity panel, and a hidden panel is
+    // display:none — so a notice raised from Settings ("Key removed.") would
+    // never be seen. When the panel it lives in isn't showing, the message
+    // falls back to floating, which is the only way it can be seen at all.
+    const inFeed = $("toast");
+    const activityShowing = !!document.querySelector(
+      '.panel[data-panel="activity"].is-active');
+    const target = activityShowing ? inFeed : floatingToast();
+    // Only ever one visible at a time.
+    (activityShowing ? floatingToast() : inFeed).hidden = true;
+    target.textContent = message;
+    target.hidden = false;
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => { el.hidden = true; }, 3200);
+    toastTimer = setTimeout(() => { target.hidden = true; }, 3200);
+  }
+
+  function floatingToast() {
+    let node = $("toastFloat");
+    if (!node) {
+      node = el("div", "toast is-floating");
+      node.id = "toastFloat";
+      node.hidden = true;
+      document.body.appendChild(node);
+    }
+    return node;
   }
 
   // ---------------------------------------------------------------- helpers
