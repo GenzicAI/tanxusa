@@ -406,13 +406,25 @@
     // where the file IS, and with automatic moving switched off that is every
     // file. So the pill says so in words — the style is the hint, the text is
     // the fact.
-    // `filed` may be supplied by the caller when the file's real location is
-    // known (search results, where the path is right there). Without it, an
-    // event that isn't a "moved" left the file where it was, by definition.
+    // Whether a file is filed is a fact about where it sits, so read it off
+    // the path rather than inferring it from the kind of event. Assuming
+    // "anything not moved is unfiled" was wrong for the ordinary case of a
+    // file that ARRIVED inside a folder: dropping a Crypto Mining folder into
+    // the watch folder indexes its contents without moving anything, and every
+    // one of those files was then labelled "not filed" while sitting in a
+    // folder the operator can see in Explorer.
+    //
+    // Filed means one of the folders it sits under is its category — the same
+    // test store.stats uses for the Filed tile, so the two cannot disagree,
+    // and it still holds for a category folder subdivided by hand.
+    const parents = (record.path || "").split(/[\\/]/).slice(0, -1);
+    const catKey = (record.category || "").toLowerCase();
+    const filed = record.filed === undefined
+      ? (kind === "moved" || (!!catKey && parents.some((s) => s.toLowerCase() === catKey)))
+      : record.filed;
     const classifiedOnly = !!record.category &&
       kind !== "deleted" && kind !== "error" && kind !== "undone" &&
-      kind !== "restored" &&
-      (record.filed === undefined ? kind !== "moved" : !record.filed);
+      kind !== "restored" && !filed;
     const label =
       kind === "deleted" ? "removed"
       : kind === "error" ? "error"
