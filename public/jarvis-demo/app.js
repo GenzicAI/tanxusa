@@ -411,11 +411,13 @@
     // event that isn't a "moved" left the file where it was, by definition.
     const classifiedOnly = !!record.category &&
       kind !== "deleted" && kind !== "error" && kind !== "undone" &&
+      kind !== "restored" &&
       (record.filed === undefined ? kind !== "moved" : !record.filed);
     const label =
       kind === "deleted" ? "removed"
       : kind === "error" ? "error"
       : kind === "undone" ? "undone"
+      : kind === "restored" ? "restored"
       : classifiedOnly ? "not filed · " + record.category
       : kind === "moved" ? "→ " + (record.category || "filed")
       : record.category || "indexed";
@@ -460,14 +462,28 @@
       foot.appendChild(open);
     }
     if (gone) {
-      // Shown, not hidden: the operator looks for the same pair on every card.
-      // Disabled and explained, because Jarvis moves files — it never deleted
-      // this one and cannot bring it back. The Recycle Bin can.
+      // Jarvis never deleted this — the operator did, in Explorer — so there
+      // is nothing in its own history to reverse. Undo asks Windows for the
+      // copy the Recycle Bin kept. Whether one is still there is outside our
+      // control, so the button tries and reports what actually happened.
       const undo = el("button", "link-btn", "Undo");
       undo.type = "button";
-      undo.disabled = true;
-      undo.title = "Jarvis didn't delete this and can't bring it back. "
-        + "Check your Recycle Bin.";
+      undo.title = "Put this back from the Recycle Bin";
+      undo.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        undo.disabled = true;
+        undo.textContent = "Restoring…";
+        const result = await api().restore_deleted(record.path);
+        toast((result && result.message) || "Couldn't restore that.");
+        if (result && result.ok) {
+          if (result.state) renderState(result.state);
+          refreshStats();
+          loadActivity();
+        } else {
+          undo.disabled = false;
+          undo.textContent = "Undo";
+        }
+      });
       foot.appendChild(undo);
     } else if (kind === "moved" && record.event_id && !record.undone) {
       const undo = el("button", "link-btn", "Undo");

@@ -196,6 +196,17 @@
       return Promise.resolve({ message: "Demo mode — nothing was actually moved.", state });
     },
 
+    // The real app asks Windows to undelete from the Recycle Bin. There is no
+    // Recycle Bin in a browser, so the demo says so rather than pretending a
+    // file came back — and without this the button would call a method that
+    // isn't here and throw.
+    restore_deleted() {
+      return Promise.resolve({
+        ok: false,
+        message: "Demo mode — there are no real files here to restore.",
+      });
+    },
+
     search(query, limit) {
       const q = (query || "").toLowerCase();
       const hits = FAKE_DOCS.filter((d) =>
