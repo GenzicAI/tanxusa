@@ -184,6 +184,14 @@ body.guide-active .panel { padding-bottom: 210px; }
   color: var(--accent);
   flex: none;
 }
+/* Classified but left where it is — deliberately quieter than the filled
+   accent pill, which means "moved into that folder". */
+.item-cat.is-tag {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink3);
+  padding: 0.5px 5px;
+}
 .item-note { font-size: 11.5px; color: var(--ink3); margin-top: 3px; line-height: 1.45; }
 .item-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; gap: 6px; }
 .item-time { font-size: 10px; color: var(--ink3); font-family: ui-monospace, Consolas, monospace; }

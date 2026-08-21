@@ -346,13 +346,27 @@
     const item = el("div", "item" + (record.error || kind === "error" ? " is-error" : ""));
     const top = el("div", "item-top");
     top.appendChild(el("div", "item-name", name));
+    // A moved file and a merely-classified one used to render the identical
+    // pill — "project" on a file Jarvis had filed into project/, and
+    // "project" on one it had only tagged and left where it was. There is no
+    // way to tell those apart, so a category showing up here read as proof a
+    // folder had been created when none had. The arrow means "moved into";
+    // a classified-only file gets a muted tag and says so on hover.
+    const classifiedOnly = kind !== "moved" && !!record.category &&
+      kind !== "deleted" && kind !== "error" && kind !== "undone";
     const label =
-      kind === "moved" ? record.category || "filed"
+      kind === "moved" ? "→ " + (record.category || "filed")
       : kind === "deleted" ? "removed"
       : kind === "error" ? "error"
       : kind === "undone" ? "undone"
       : record.category || "indexed";
-    top.appendChild(el("div", "item-cat", label));
+    const cat = el("div", "item-cat" + (classifiedOnly ? " is-tag" : ""), label);
+    if (classifiedOnly) {
+      cat.title = "Classified as " + record.category +
+        " — indexed where it is, not moved. Turn on “Move new files into " +
+        "folders automatically” in Settings, or press Organize now.";
+    }
+    top.appendChild(cat);
     item.appendChild(top);
 
     const note = record.summary || record.note || record.error || "";
