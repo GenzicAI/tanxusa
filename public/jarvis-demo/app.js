@@ -504,8 +504,16 @@
 
   window.addEventListener("jarvis:scan-done", (e) => {
     refreshStats();
-    if (e.detail && e.detail.indexed != null) {
-      toast("Finished: " + e.detail.indexed + " file(s) processed.");
+    // "processed" told the operator nothing about the thing they pressed the
+    // button for. After a filing pass, how many files actually moved is the
+    // answer — including when that is none, which is a real outcome and used
+    // to be indistinguishable from success.
+    if (e.detail && e.detail.moved != null) {
+      toast(e.detail.moved
+        ? "Filed " + e.detail.moved + " file(s) into folders."
+        : "Nothing needed filing — everything is already in a folder.");
+    } else if (e.detail && e.detail.indexed != null) {
+      toast("Finished: " + e.detail.indexed + " file(s) read.");
     }
   });
 
