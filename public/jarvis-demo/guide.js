@@ -37,6 +37,21 @@
             "It takes about a minute, and you can skip it at any time.",
     },
     {
+      // Accurate, not just reassuring: with an AI key set (the very next
+      // recommended step), a snippet of a document's content goes to that
+      // provider to classify or answer questions about it — and pasting a
+      // link, or leaving natural voice on, both reach the internet too.
+      // Only the no-key, no-natural-voice, no-pasted-link setup is fully
+      // offline. Overclaiming "nothing ever leaves this PC" here would be
+      // a privacy promise the app doesn't keep the moment a key is added.
+      target: null, panel: null,
+      text: "One thing first: every file I read is indexed and searched right here on " +
+            "this PC. If you add an AI key, I send the relevant part of a document to " +
+            "that provider to classify it or answer your question — without one, I stay " +
+            "fully offline. I also reach the internet if you paste a web link, or if " +
+            "natural voice is on.",
+    },
+    {
       target: ".rail-tabs", panel: "activity", shape: "rounded",
       text: "See that green glowing ring? As I explain each part, it will appear " +
             "around the thing I'm talking about — so keep an eye on the screen and follow along. " +
