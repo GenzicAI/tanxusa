@@ -434,16 +434,42 @@
 
     const foot = el("div", "item-foot");
     foot.appendChild(el("div", "item-time", fmtWhen(record.ts)));
+    // A removed card keeps both buttons so the feed reads consistently, but
+    // neither can do what it says: the file is gone. Open says so rather than
+    // silently failing — open_path correctly refuses a missing path, but the
+    // refusal was never shown — and Undo is visibly disabled, because a
+    // deletion is not something this app can reverse.
+    const gone = kind === "deleted";
+    if (gone) item.classList.add("is-gone");
     if (record.path) {
       const open = el("button", "link-btn", "Open");
       open.type = "button";
-      open.addEventListener("click", (e) => {
+      open.addEventListener("click", async (e) => {
         e.stopPropagation();
-        api().open_path(record.path);
+        if (gone) {
+          toast(name + " was removed — it is no longer accessible.");
+          return;
+        }
+        // A file can also be deleted between the feed being drawn and the
+        // click, and silence there looked like a broken button.
+        const result = await api().open_path(record.path);
+        if (result && result.ok === false) {
+          toast(result.message || "That file is no longer there.");
+        }
       });
       foot.appendChild(open);
     }
-    if (kind === "moved" && record.event_id && !record.undone) {
+    if (gone) {
+      // Shown, not hidden: the operator looks for the same pair on every card.
+      // Disabled and explained, because Jarvis moves files — it never deleted
+      // this one and cannot bring it back. The Recycle Bin can.
+      const undo = el("button", "link-btn", "Undo");
+      undo.type = "button";
+      undo.disabled = true;
+      undo.title = "Jarvis didn't delete this and can't bring it back. "
+        + "Check your Recycle Bin.";
+      foot.appendChild(undo);
+    } else if (kind === "moved" && record.event_id && !record.undone) {
       const undo = el("button", "link-btn", "Undo");
       undo.type = "button";
       undo.addEventListener("click", async (e) => {
@@ -457,7 +483,12 @@
     }
     item.appendChild(foot);
     if (record.path) {
-      item.addEventListener("click", () => api().reveal_path(record.path));
+      item.addEventListener("click", async () => {
+        const result = await api().reveal_path(record.path);
+        if (result && result.ok === false) {
+          toast(result.message || "That file is no longer there.");
+        }
+      });
     }
     return item;
   }
