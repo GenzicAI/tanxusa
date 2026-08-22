@@ -21,7 +21,11 @@ export const metadata = {
   openGraph: {
     title: 'TanXUSA — Execution at 10X Speed',
     description: 'AI agents + expert delivery team that builds, automates, and scales operations.',
-    images: ['/og-image.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'TanXUSA — Execution at 10X Speed',
+    description: 'AI agents + expert delivery team that builds, automates, and scales operations.',
   },
 }
 
