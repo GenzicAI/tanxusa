@@ -125,6 +125,7 @@ export function GalleryModal({ project, onClose }: GalleryModalProps) {
                 title={`Live preview of ${project.title}`}
                 className="h-full w-full border-0"
                 sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
+                allow="autoplay"
                 loading="lazy"
                 onLoad={() => setStatus('loaded')}
               />
