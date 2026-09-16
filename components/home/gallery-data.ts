@@ -191,6 +191,19 @@ export const galleryProjects: GalleryProject[] = [
       'Guided in-app tutorial, zero setup',
     ],
   },
+  {
+    slug: 'mobile-onsite-jr',
+    title: 'Mobile Onsite JR',
+    category: 'Websites & E-com',
+    tagline: 'On-Site Jewelry Repair Booking App',
+    url: 'https://mobile-onsite-jr.vercel.app/',
+    features: [
+      'Book a jeweler to come to you — no shop visit',
+      'Live job tracking: matched → en route → done',
+      'Mock deposit & Stripe-ready payment flow',
+      'Installable PWA for iPhone & Android',
+    ],
+  },
 ];
 
 export function screenshotUrl(url: string) {
