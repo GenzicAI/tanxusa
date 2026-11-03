@@ -137,6 +137,20 @@ export const galleryProjects: GalleryProject[] = [
     ],
   },
   {
+    slug: 'laquisha-toast-assistant',
+    title: 'LaQuisha',
+    category: 'Voice & Concierge',
+    tagline: 'Twin-Orb Restaurant Voice Assistant',
+    url: 'https://tanxusa.com/laquisha-demo/',
+    image: '/laquisha-hero.svg',
+    features: [
+      'Twin hot pink orbs: one listens, one speaks',
+      'Voice-first answers on sales, labor & reservations',
+      'Toast-style quick prompts and live data cards',
+      'Built for iPhone, installs nothing',
+    ],
+  },
+  {
     slug: 'genzic-concierge-max',
     title: 'Genzic Concierge — Max',
     category: 'Voice & Concierge',

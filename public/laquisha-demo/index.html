@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LaQuisha Twin Orb</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600&family=Rajdhani:wght@600;700&display=swap">
+<style>
+/* Layout: one phone-sized column. Header, twin-orb HUD stage, status, quick prompts, transcript, input bar. Framed as a phone on desktop. */
+:root {
+  --bg: #0a0509;
+  --panel: #12090f;
+  --ink: #f7e9f1;
+  --muted: #b99dad;
+  --line: #3a1d2d;
+  --pink: #ff4fa3;
+  --pink-soft: #ff8cc6;
+  --pink-deep: #b81e6e;
+  --bubble: #2a1220;
+  --font-display: "Rajdhani", "Arial Narrow", sans-serif;
+  --font-body: "Manrope", -apple-system, "SF Pro Text", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex;
+  justify-content: center;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+.device {
+  width: 100%;
+  max-width: 480px;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(120% 60% at 50% 18%, rgba(255, 79, 163, 0.10), transparent 60%),
+    var(--bg);
+  position: relative;
+  overflow: hidden;
+  padding-inline: 14px;
+}
+@media (min-width: 560px) {
+  body { align-items: center; padding-block: 24px; }
+  .device {
+    width: 390px;
+    height: min(844px, 100%);
+    border: 1px solid var(--line);
+    border-radius: 44px;
+    box-shadow: 0 30px 80px rgba(255, 79, 163, 0.12), 0 0 0 8px #000;
+  }
+}
+
+/* header */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 6px 8px; }
+.id { min-width: 0; }
+.name { display: flex; align-items: center; gap: 8px; font-family: var(--font-display); font-weight: 700; font-size: 26px; line-height: 1; letter-spacing: 0.02em; }
+.live { font-family: var(--font-mono); font-size: 9px; font-weight: 500; letter-spacing: 0.14em; color: var(--pink-soft); border: 1px solid var(--pink-deep); border-radius: 99px; padding: 3px 7px 2px; display: inline-flex; align-items: center; gap: 5px; }
+.live i { width: 5px; height: 5px; border-radius: 50%; background: var(--pink); box-shadow: 0 0 8px var(--pink); animation: blink 1.6s ease-in-out infinite; }
+.sub { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; color: var(--muted); margin-top: 5px; }
+.tools { display: flex; gap: 8px; flex: none; }
+.ibtn { width: 44px; height: 44px; border-radius: 14px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); display: grid; place-items: center; cursor: pointer; padding: 0; }
+.ibtn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.ibtn[aria-pressed="true"] { border-color: var(--pink); color: var(--pink-soft); box-shadow: 0 0 14px rgba(255, 79, 163, 0.3); }
+.ibtn:focus-visible, .chip:focus-visible, .stage:focus-visible, #send:focus-visible, select:focus-visible, #q:focus-visible { outline: 2px solid var(--pink-soft); outline-offset: 2px; }
+
+.voice { display: flex; align-items: center; gap: 10px; padding: 4px 4px 0; border-top: 1px solid var(--line); margin-top: 4px; padding-top: 10px; }
+.voice label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; }
+.voice select { flex: 1; min-width: 0; height: 40px; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 12px; padding: 0 12px; font: 500 14px var(--font-body); }
+
+/* stage */
+.stage { position: relative; display: block; width: 100%; height: clamp(190px, 31vh, 280px); flex: none; border: 0; background: none; padding: 0; margin-top: 4px; cursor: pointer; color: inherit; }
+.stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.tags { position: absolute; left: 0; right: 0; bottom: 4px; display: flex; font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.14em; color: var(--muted); text-transform: uppercase; pointer-events: none; }
+.tags span { width: 50%; text-align: center; }
+.tags span.on { color: var(--pink-soft); }
+.status { text-align: center; font-size: 13px; color: var(--muted); min-height: 20px; padding: 2px 8px 8px; flex: none; }
+.status b { color: var(--pink-soft); font-weight: 600; }
+
+/* quick prompts */
+.chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 2px 0 10px; flex: none; }
+.chip { flex: none; max-width: 100%; height: 36px; padding: 0 13px; border-radius: 99px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); font: 500 13px var(--font-body); cursor: pointer; white-space: nowrap; }
+.chip:active { border-color: var(--pink); background: var(--bubble); }
+
+/* transcript */
+.log { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 12px; padding: 4px 2px 12px; -webkit-overflow-scrolling: touch; }
+.msg { max-width: 88%; }
+.msg.user { align-self: flex-end; background: var(--bubble); border: 1px solid var(--line); border-radius: 18px 18px 6px 18px; padding: 9px 13px; }
+.msg.ai { align-self: flex-start; }
+.who { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.14em; color: var(--pink-soft); margin-bottom: 3px; }
+.txt { overflow-wrap: anywhere; }
+.card { margin-top: 8px; border: 1px solid var(--line); background: var(--panel); border-radius: 14px; padding: 4px 12px; }
+.row { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+.row:last-child { border-bottom: 0; }
+.row span:first-child { color: var(--muted); min-width: 0; }
+.row span:last-child { font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; }
+.row .up { color: var(--pink-soft); }
+.demo { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.08em; color: var(--muted); margin-top: 6px; }
+
+/* input */
+.bar { flex: none; display: flex; align-items: center; gap: 10px; padding: 10px 0 14px; border-top: 1px solid var(--line); }
+.mini { width: 44px; height: 44px; flex: none; border-radius: 50%; border: 0; padding: 0; cursor: pointer; background: radial-gradient(circle at 50% 50%, #fff2f8 0, var(--pink) 28%, var(--pink-deep) 58%, transparent 72%); box-shadow: 0 0 18px rgba(255, 79, 163, 0.5); }
+#q { flex: 1; min-width: 0; height: 44px; border-radius: 22px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); padding: 0 16px; font: 400 16px var(--font-body); }
+#q::placeholder { color: var(--muted); }
+#send { width: 44px; height: 44px; flex: none; border-radius: 50%; border: 1px solid var(--line); background: var(--panel); color: var(--pink-soft); display: grid; place-items: center; padding: 0; cursor: pointer; }
+#send svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+@keyframes blink { 50% { opacity: 0.35; } }
+@media (prefers-reduced-motion: reduce) { .live i { animation: none; } }
+</style>
+
+</head>
+<body>
+<div class="device">
+  <header class="top">
+    <div class="id">
+      <div class="name">LaQuisha <span class="live"><i></i>LIVE</span></div>
+      <div class="sub">GENZIC AGENTIC AI ASSISTANT</div>
+    </div>
+    <div class="tools">
+      <button class="ibtn" id="mute" type="button" aria-pressed="true" aria-label="Spoken replies on">
+        <svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+      </button>
+      <button class="ibtn" id="bolt" type="button" aria-pressed="true" aria-label="Show suggestions">
+        <svg viewBox="0 0 24 24"><path d="M13 3 5 13.5h6L10 21l8-10.5h-6L13 3z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="voice">
+    <label for="voice">Voice</label>
+    <select id="voice"><option value="">Automatic (best available)</option></select>
+  </div>
+
+  <button class="stage" id="stage" type="button" aria-label="Tap the orbs and ask a question">
+    <canvas id="cv"></canvas>
+    <div class="tags"><span id="tagL">In · Listen</span><span id="tagR">Out · Speak</span></div>
+  </button>
+  <div class="status" id="status" aria-live="polite">Tap an orb and ask a question, or tap <b>⚡</b> for suggestions.</div>
+
+  <div class="chips" id="chips">
+    <button class="chip" type="button">Today's sales</button>
+    <button class="chip" type="button">Top sellers</button>
+    <button class="chip" type="button">Labor cost</button>
+    <button class="chip" type="button">What's 86'd?</button>
+    <button class="chip" type="button">Tonight's reservations</button>
+  </div>
+
+  <div class="log" id="log" aria-live="polite"></div>
+
+  <form class="bar" id="form" autocomplete="off">
+    <button class="mini" id="mini" type="button" aria-label="Talk to LaQuisha"></button>
+    <input id="q" type="text" placeholder="Ask about your restaurant…" enterkeyhint="send">
+    <button id="send" type="submit" aria-label="Send">
+      <svg viewBox="0 0 24 24"><path d="m21 3-9.5 18-2.2-7.8L3 11l18-8z"/><path d="m21 3-11.7 10.2"/></svg>
+    </button>
+  </form>
+</div>
+
+<script>
+(function () {
+  var $ = function (s) { return document.querySelector(s); };
+  var cv = $("#cv"), ctx = cv.getContext("2d");
+  var logEl = $("#log"), statusEl = $("#status"), qEl = $("#q");
+  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- sample answers (demo data) ---------- */
+  var ANSWERS = [
+    { k: /sale|revenue|today/, text: "Net sales are $4,812 as of 2:15 PM, up 8% on last Tuesday. Lunch carried 61% of the volume.",
+      rows: [["Net sales", "$4,812"], ["Orders", "164"], ["Average check", "$29.34"], ["vs last Tuesday", "+8.0%", 1]] },
+    { k: /top|best|seller|popular/, text: "Birria Tacos lead today. Pink Lemonade is your fastest-growing drink.",
+      rows: [["Birria Tacos", "58 sold"], ["Pink Lemonade", "41 sold"], ["Crispy Rice", "37 sold"]] },
+    { k: /labor|staff|payroll|shift/, text: "Labor is running at 27.4%, just under your 28% target. Six people are on the clock.",
+      rows: [["Labor cost", "27.4%"], ["Target", "28.0%"], ["On the clock", "6"], ["Next cut", "4:30 PM"]] },
+    { k: /86|out of|sold out|inventory|stock/, text: "Two items are 86'd right now. I can hide both on the online menu if you want.",
+      rows: [["Atlantic Salmon", "86'd"], ["Oat Milk", "86'd"], ["Low stock", "Limes (1 case)"]] },
+    { k: /reserv|book|tonight|covers|table/, text: "Tonight you have 42 covers booked. The 7:30 PM slot is your peak.",
+      rows: [["Covers booked", "42"], ["Peak slot", "7:30 PM"], ["Walk-in capacity", "18 seats"], ["Large parties", "2 (8+)"]] }
+  ];
+  var FALLBACK = { text: "I can pull sales, top sellers, labor, 86'd items and reservations. Try one of those." };
+  var PROMPTS = ["How are sales today?", "What are my top sellers?", "How's labor looking?", "What's 86'd right now?", "Tonight's reservations?"];
+  var pIdx = 0;
+
+  /* ---------- state ---------- */
+  var mode = "idle"; // idle | listening | thinking | speaking
+  var busy = false, spoken = true, timer = null;
+
+  function setMode(m, msg) {
+    mode = m;
+    $("#tagL").className = m === "listening" ? "on" : "";
+    $("#tagR").className = m === "speaking" ? "on" : "";
+    if (msg !== undefined) statusEl.innerHTML = msg;
+  }
+
+  /* ---------- transcript ---------- */
+  function add(cls, text, who) {
+    var d = document.createElement("div");
+    d.className = "msg " + cls;
+    if (who) { var w = document.createElement("div"); w.className = "who"; w.textContent = who; d.appendChild(w); }
+    var t = document.createElement("div"); t.className = "txt"; t.textContent = text; d.appendChild(t);
+    logEl.appendChild(d);
+    logEl.scrollTop = logEl.scrollHeight;
+    return d;
+  }
+  function addCard(msg, rows) {
+    var c = document.createElement("div"); c.className = "card";
+    rows.forEach(function (r) {
+      var row = document.createElement("div"); row.className = "row";
+      var a = document.createElement("span"); a.textContent = r[0];
+      var b = document.createElement("span"); b.textContent = r[1]; if (r[2]) b.className = "up";
+      row.appendChild(a); row.appendChild(b); c.appendChild(row);
+    });
+    msg.appendChild(c);
+    var n = document.createElement("div"); n.className = "demo"; n.textContent = "SAMPLE DATA FOR PREVIEW"; msg.appendChild(n);
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  /* ---------- speech ---------- */
+  var voiceSel = $("#voice");
+  function loadVoices() {
+    if (!("speechSynthesis" in window)) return;
+    var vs = speechSynthesis.getVoices().filter(function (v) { return /^en/i.test(v.lang); });
+    if (!vs.length || voiceSel.options.length > 1) return;
+    vs.forEach(function (v) { var o = document.createElement("option"); o.value = v.name; o.textContent = v.name; voiceSel.appendChild(o); });
+  }
+  try { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; } catch (e) {}
+  function speak(text, done) {
+    try {
+      if (!spoken || !("speechSynthesis" in window)) return false;
+      speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      var want = voiceSel.value;
+      var v = speechSynthesis.getVoices().filter(function (x) { return want ? x.name === want : /en-US/i.test(x.lang); })[0];
+      if (v) u.voice = v;
+      u.rate = 1.02;
+      u.onend = done; u.onerror = done;
+      speechSynthesis.speak(u);
+      return true;
+    } catch (e) { return false; }
+  }
+
+  /* ---------- conversation ---------- */
+  function ask(q) {
+    q = (q || "").trim();
+    if (!q || busy) return;
+    busy = true;
+    add("user", q);
+    setMode("thinking", "Thinking…");
+    var l = q.toLowerCase();
+    var hit = ANSWERS.filter(function (a) { return a.k.test(l); })[0] || FALLBACK;
+    timer = setTimeout(function () {
+      var msg = add("ai", "", "LAQUISHA");
+      var out = msg.querySelector(".txt");
+      var words = hit.text.split(" "), i = 0, typed = false, said = false;
+      var voiced = speak(hit.text, function () { said = true; finish(); });
+      if (!voiced) said = true;
+      setMode("speaking", "<b>LaQuisha</b> is replying");
+      var iv = setInterval(function () {
+        i++; out.textContent = words.slice(0, i).join(" ");
+        logEl.scrollTop = logEl.scrollHeight;
+        if (i >= words.length) { clearInterval(iv); typed = true; if (hit.rows) addCard(msg, hit.rows); finish(); }
+      }, 55);
+      function finish() {
+        if (!typed || !said) return;
+        busy = false; setMode("idle", "Tap an orb and ask a question, or tap <b>⚡</b> for suggestions.");
+      }
+    }, 900);
+  }
+  function listen() {
+    if (busy) return;
+    busy = true;
+    try { speechSynthesis.cancel(); } catch (e) {}
+    var q = PROMPTS[pIdx++ % PROMPTS.length];
+    setMode("listening", "Listening…");
+    timer = setTimeout(function () { busy = false; ask(q); }, 1900);
+  }
+
+  $("#stage").addEventListener("click", listen);
+  $("#mini").addEventListener("click", listen);
+  $("#form").addEventListener("submit", function (e) { e.preventDefault(); var v = qEl.value; qEl.value = ""; ask(v); });
+  $("#chips").addEventListener("click", function (e) { var b = e.target.closest(".chip"); if (b) ask(b.textContent); });
+  $("#bolt").addEventListener("click", function () {
+    var b = $("#bolt"), on = b.getAttribute("aria-pressed") !== "true";
+    b.setAttribute("aria-pressed", on); $("#chips").hidden = !on;
+  });
+  $("#mute").addEventListener("click", function () {
+    spoken = !spoken;
+    var b = $("#mute"); b.setAttribute("aria-pressed", spoken);
+    b.setAttribute("aria-label", spoken ? "Spoken replies on" : "Spoken replies off");
+    if (!spoken) { try { speechSynthesis.cancel(); } catch (e) {} }
+  });
+
+  add("ai", "Good afternoon. I'm LaQuisha. Tap an orb and ask about sales, labor or tonight's reservations.", "LAQUISHA");
+
+  /* ---------- twin orb canvas ---------- */
+  var W = 0, H = 0, amps = [0.12, 0.12], T = 0, last = 0;
+  function resize() {
+    var r = cv.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 3);
+    W = r.width; H = r.height;
+    cv.width = Math.round(W * d); cv.height = Math.round(H * d);
+    ctx.setTransform(d, 0, 0, d, 0, 0);
+  }
+  if (window.ResizeObserver) new ResizeObserver(resize).observe(cv); else window.addEventListener("resize", resize);
+  resize();
+
+  function blob(cx, cy, r, amp, t, k, ph, sp, alpha, lw) {
+    ctx.beginPath();
+    for (var i = 0; i <= 90; i++) {
+      var a = i / 90 * Math.PI * 2;
+      var rr = r * (1 + amp * 0.055 * Math.sin(k * a + t * sp + ph) + amp * 0.03 * Math.sin((k + 2) * a - t * sp * 0.7 + ph * 2));
+      var x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr;
+      if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = "rgba(255,110,185," + alpha + ")"; ctx.lineWidth = lw; ctx.stroke();
+  }
+
+  function orb(cx, cy, R, amp, t, side) {
+    var core = R * (0.62 + amp * 0.12);
+    var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 1.05);
+    g.addColorStop(0, "rgba(255,242,248,0.98)");
+    g.addColorStop(0.14 + amp * 0.05, "rgba(255,120,190,0.85)");
+    g.addColorStop(0.42, "rgba(214,40,128,0.38)");
+    g.addColorStop(0.75, "rgba(120,15,70,0.14)");
+    g.addColorStop(1, "rgba(120,15,70,0)");
+    ctx.globalCompositeOperation = "lighter";
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, R * 1.05, 0, Math.PI * 2); ctx.fill();
+
+    var ph = side * 1.7;
+    blob(cx, cy, core, amp, t, 3, ph, 1.3, 0.85, 1.4);
+    blob(cx, cy, R * 0.82, amp, t, 4, ph + 1, -0.9, 0.5, 1.1);
+    blob(cx, cy, R * 0.98, amp * 0.8, t, 5, ph + 2, 0.6, 0.28, 1);
+
+    /* partial arcs */
+    var sp = t * (0.35 + amp * 0.9) * (side ? -1 : 1);
+    ctx.strokeStyle = "rgba(255,140,200,0.75)"; ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.arc(cx, cy, R * 0.9, sp, sp + 1.1); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx, cy, R * 0.9, sp + Math.PI, sp + Math.PI + 0.6); ctx.stroke();
+
+    /* tick ring */
+    var tr = R * 1.1, rot = t * 0.12 * (side ? 1 : -1);
+    for (var i = 0; i < 60; i++) {
+      var a = rot + i / 60 * Math.PI * 2, long = i % 5 === 0;
+      var r0 = tr - (long ? 7 : 3), r1 = tr;
+      ctx.strokeStyle = long ? "rgba(255,150,205,0.55)" : "rgba(255,120,185,0.22)";
+      ctx.lineWidth = long ? 1.4 : 1;
+      ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0); ctx.lineTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1); ctx.stroke();
+    }
+    ctx.globalCompositeOperation = "source-over";
+  }
+
+  function frame(now) {
+    var dt = Math.min(0.05, (now - last) / 1000 || 0.016); last = now;
+    T += dt * (reduce ? 0.2 : 1);
+    var n = Math.abs(Math.sin(T * 9.1) * 0.6 + Math.sin(T * 5.3 + 1) * 0.4);
+    var tgt = [0.12, 0.12];
+    if (mode === "listening") { tgt[0] = 0.55 + n * 0.5; tgt[1] = 0.16; }
+    else if (mode === "thinking") { tgt[0] = tgt[1] = 0.4 + Math.sin(T * 4) * 0.12; }
+    else if (mode === "speaking") { tgt[0] = 0.16; tgt[1] = 0.55 + n * 0.5; }
+    else { tgt[0] = 0.12 + Math.sin(T * 1.2) * 0.04; tgt[1] = 0.12 + Math.sin(T * 1.2 + 1.5) * 0.04; }
+    for (var i = 0; i < 2; i++) amps[i] += (tgt[i] - amps[i]) * Math.min(1, dt * 8);
+
+    ctx.clearRect(0, 0, W, H);
+    var R = Math.min(W * 0.215, (H - 22) * 0.42), cy = (H - 14) / 2;
+    var x1 = W * 0.26, x2 = W * 0.74;
+
+    /* link between orbs */
+    var lg = ctx.createLinearGradient(x1, 0, x2, 0);
+    lg.addColorStop(0, "rgba(255,110,185,0.1)"); lg.addColorStop(0.5, "rgba(255,110,185,0.5)"); lg.addColorStop(1, "rgba(255,110,185,0.1)");
+    ctx.strokeStyle = lg; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x1, cy); ctx.lineTo(x2, cy); ctx.stroke();
+    var p = mode === "thinking" ? (T * 0.9) % 1 : mode === "speaking" ? 1 - ((T * 0.6) % 1) : mode === "listening" ? (T * 0.6) % 1 : 0.5 + Math.sin(T * 0.8) * 0.12;
+    ctx.fillStyle = "rgba(255,200,230,0.95)";
+    ctx.beginPath(); ctx.arc(x1 + (x2 - x1) * p, cy, 2.2, 0, Math.PI * 2); ctx.fill();
+
+    orb(x1, cy, R, amps[0], T, 0);
+    orb(x2, cy, R, amps[1], T, 1);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
