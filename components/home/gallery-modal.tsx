@@ -51,7 +51,11 @@ export function GalleryModal({ project, onClose }: GalleryModalProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
             onClick={(e) => e.stopPropagation()}
-            className="relative flex h-[100dvh] w-full flex-col overflow-hidden bg-gray-950 shadow-2xl md:h-[90vh] md:w-[92vw] md:rounded-2xl lg:h-[85vh] lg:max-w-[1200px]"
+            className={`relative flex h-[100dvh] w-full flex-col overflow-hidden bg-gray-950 shadow-2xl md:rounded-2xl ${
+              project.phone
+                ? 'md:h-[92vh] md:w-[440px] md:max-w-[440px]'
+                : 'md:h-[90vh] md:w-[92vw] lg:h-[85vh] lg:max-w-[1200px]'
+            }`}
             style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }}
           >
             {/* Header */}

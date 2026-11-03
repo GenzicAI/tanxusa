@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 675" role="img" aria-label="LaQuisha twin pink orb voice assistant">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="45%" r="70%">
+      <stop offset="0" stop-color="#2a0f20"/>
+      <stop offset="1" stop-color="#0a0509"/>
+    </radialGradient>
+    <radialGradient id="orb" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#fff2f8"/>
+      <stop offset="0.16" stop-color="#ff78be"/>
+      <stop offset="0.45" stop-color="#d62880" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#781046" stop-opacity="0"/>
+    </radialGradient>
+    <g id="ticks" stroke="#ff96cd" stroke-opacity="0.5" stroke-width="2">
+      <circle r="150" fill="none" stroke-opacity="0.35"/>
+      <path d="M0-150V-136M0 150V136M-150 0H-136M150 0H136M106-106 96-96M-106-106-96-96M106 106 96 96M-106 106-96 96" />
+    </g>
+  </defs>
+  <rect width="900" height="675" fill="url(#bg)"/>
+  <line x1="270" y1="300" x2="630" y2="300" stroke="#ff6eb9" stroke-opacity="0.45"/>
+  <g transform="translate(270 300)">
+    <circle r="165" fill="url(#orb)"/>
+    <circle r="100" fill="none" stroke="#ff6eb9" stroke-width="2.5"/>
+    <circle r="130" fill="none" stroke="#ff6eb9" stroke-opacity="0.5" stroke-width="2"/>
+    <use href="#ticks"/>
+  </g>
+  <g transform="translate(630 300)">
+    <circle r="165" fill="url(#orb)"/>
+    <ellipse rx="104" ry="98" fill="none" stroke="#ff6eb9" stroke-width="2.5"/>
+    <ellipse rx="130" ry="124" fill="none" stroke="#ff6eb9" stroke-opacity="0.5" stroke-width="2"/>
+    <use href="#ticks"/>
+  </g>
+  <g font-family="ui-monospace, Menlo, monospace" font-size="20" letter-spacing="3" fill="#b99dad" text-anchor="middle">
+    <text x="270" y="520">IN · LISTEN</text>
+    <text x="630" y="520">OUT · SPEAK</text>
+  </g>
+  <text x="450" y="600" font-family="Arial Narrow, Arial, sans-serif" font-weight="700" font-size="56" fill="#f7e9f1" text-anchor="middle">LaQuisha</text>
+</svg>
