@@ -21,6 +21,9 @@ export interface GalleryProject {
    *  build that narrates itself, a second copy in another tab talks over the
    *  first, so it is only coherent when viewed one instance at a time. */
   noNewTab?: boolean;
+  /** Opens the flyout as a tall, slim phone-width panel instead of the wide
+   *  desktop one. For builds designed for a phone screen. */
+  phone?: boolean;
 }
 
 export const galleryCategories: GalleryCategory[] = [
@@ -143,6 +146,7 @@ export const galleryProjects: GalleryProject[] = [
     tagline: 'Twin-Orb Restaurant Voice Assistant',
     url: '/laquisha-demo/',
     image: '/laquisha-hero.svg',
+    phone: true,
     features: [
       'Twin hot pink orbs: one listens, one speaks',
       'Voice-first answers on sales, labor & reservations',
