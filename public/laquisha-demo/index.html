@@ -284,7 +284,9 @@ body {
     try { speechSynthesis.cancel(); } catch (e) {}
     var q = PROMPTS[pIdx++ % PROMPTS.length];
     setMode("listening", "Listening…");
-    timer = setTimeout(function () { busy = false; ask(q); }, 1900);
+    var ci = 0; qEl.value = "";
+    var civ = setInterval(function () { ci++; qEl.value = q.slice(0, ci); if (ci >= q.length) clearInterval(civ); }, 55);
+    timer = setTimeout(function () { clearInterval(civ); qEl.value = q; setTimeout(function () { busy = false; qEl.value = ""; ask(q); }, 350); }, 1700);
   }
 
   $("#stage").addEventListener("click", listen);
