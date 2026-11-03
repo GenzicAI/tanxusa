@@ -147,7 +147,7 @@ export const galleryProjects: GalleryProject[] = [
       'Twin hot pink orbs: one listens, one speaks',
       'Voice-first answers on sales, labor & reservations',
       'Toast-style quick prompts and live data cards',
-      'Built for iPhone, installs nothing',
+      'Built for mobile phones, installs nothing',
     ],
   },
   {
