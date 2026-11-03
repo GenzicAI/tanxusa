@@ -141,7 +141,7 @@ export const galleryProjects: GalleryProject[] = [
     title: 'LaQuisha',
     category: 'Voice & Concierge',
     tagline: 'Twin-Orb Restaurant Voice Assistant',
-    url: 'https://tanxusa.com/laquisha-demo/',
+    url: '/laquisha-demo/',
     image: '/laquisha-hero.svg',
     features: [
       'Twin hot pink orbs: one listens, one speaks',
