@@ -2,7 +2,6 @@ export type GalleryCategory =
   | 'All'
   | 'Websites & E-com'
   | 'AI Agents & Platforms'
-  | 'Internal Systems'
   | 'Voice & Concierge';
 
 export interface GalleryProject {
@@ -27,7 +26,6 @@ export const galleryCategories: GalleryCategory[] = [
   'All',
   'Websites & E-com',
   'AI Agents & Platforms',
-  'Internal Systems',
   'Voice & Concierge',
 ];
 
@@ -108,19 +106,6 @@ export const galleryProjects: GalleryProject[] = [
       'Magic link sign-in',
       'Create account flow',
       'Multi-tenant dashboard access',
-    ],
-  },
-  {
-    slug: 'genzic-executor',
-    title: 'Genzic Executor',
-    category: 'Internal Systems',
-    tagline: 'Internal Command Center',
-    url: 'https://genzic-executor.vercel.app/',
-    features: [
-      'Natural-language dispatch',
-      'Multi-agent routing (Max, Brittany, Brigitte)',
-      'Real-time execution log',
-      'Mobile-ready command input',
     ],
   },
   {
